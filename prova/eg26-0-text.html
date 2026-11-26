@@ -76,6 +76,7 @@ table.dades thead th{position:sticky;top:0;background:#fff;border-bottom:2px sol
 
 .am-directe{border-left:4px solid var(--blau);background:#e6f7fd;padding:6px 10px;margin:0 0 12px;font-size:.88rem}
 .am-text a{color:#005c7a;text-decoration:underline}
+.am-text .am-directe{margin:0 0 4px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
@@ -168,7 +169,9 @@ function selectorMode(el, onChange, inicial = 'guanyador') {
 }
 function tooltipHTML(titol, u, extra = '') {
   if (!teDades(u)) return `<h4>${esc(titol)}</h4><span class="nota">Encara sense dades</span>`;
-  const files = PARTITS.map(p => `<tr><td><span class="punt" style="background:${p.color}"></span>${p.nom}</td><td class="n"><b>${fmtP(pct(u.vots[p.k], u))}</b></td><td class="n">${fmtN(u.vots[p.k])}</td></tr>`).join('');
+  /* De més a menys vots; Altres, sempre al final */
+  const ordre = PARTITS.filter(p => p.k !== 'ALTRES').sort((a, b) => (u.vots[b.k] || 0) - (u.vots[a.k] || 0)).concat(PARTITS.filter(p => p.k === 'ALTRES'));
+  const files = ordre.map(p => `<tr><td><span class="punt" style="background:${p.color}"></span>${p.nom}</td><td class="n"><b>${fmtP(pct(u.vots[p.k], u))}</b></td><td class="n">${fmtN(u.vots[p.k])}</td></tr>`).join('');
   return `<h4>${esc(titol)}</h4>${extra}<table>${files}</table><div class="nota" style="margin-top:4px">Participació: <b>${fmtP(participacio(u))}</b> · Cens: ${fmtN(u.cens)}</div>`;
 }
 function mapa(wrap, features, getUnit, getTitle, opts = {}) {
@@ -251,7 +254,7 @@ function amIniciar(dadesFixes, inici) {
       document.querySelectorAll('.am-font').forEach(e => { e.innerHTML = (directe.font_per_pagina && directe.font_per_pagina[viz]) || directe.font_html; });
       if (cont && directe.escrutat != null && !cont.classList.contains('am-text')) cont.insertAdjacentHTML('afterbegin', `<div class="am-directe"><b>${directe.escrutat < 100 ? 'Escrutini provisional' : 'Escrutini provisional completat'}: ${fmtP(directe.escrutat)} escrutat</b> en la Comunitat Valenciana · Actualitzat a les ${esc(directe.hora)}</div>`);
     }
-    try { inici(dades, !!directe); } catch (e) { console.error(e); if (directe) { pinta(dadesFixes, null); } }
+    try { inici(dades, directe); } catch (e) { console.error(e); if (directe) { pinta(dadesFixes, null); } }
   }
   /* AM_DIRECTE_URL: una adreça o una llista (s'usa la primera que responga) */
   const urls = (typeof AM_DIRECTE_URL === 'undefined' ? [] : [].concat(AM_DIRECTE_URL)).filter(Boolean);
@@ -349,21 +352,25 @@ amIniciar(DADES, (D, directe) => {
       } else if (D.nota_seccions) t += `<p>${D.nota_seccions}</p>`;
       return t;
     }
+    if (seccio === 'escrutini') {
+      if (!directe || directe.escrutat == null) return '';
+      return `<div class="am-directe"><b>${directe.escrutat < 100 ? 'Escrutini provisional' : 'Escrutini provisional completat'}: ${fmtP(directe.escrutat)} escrutat</b> en la Comunitat Valenciana · Actualitzat a les ${esc(directe.hora)}</div>`;
+    }
     if (seccio === 'intro') {
       return directe
-        ? `<p>La Comunitat Valenciana elegeix 33 dels 350 diputats del Congrés: 12 en la província d'Alacant, 16 en la de València i 5 en la de Castelló. Estos són els resultats provisionals de les eleccions generals del ${D.data_text} en la Comunitat, en les províncies, en les comarques de l'Alcoià, el Comtat i la Foia de Castalla i a Alcoi, a mesura que avança l'escrutini.</p>`
-        : `<p>La Comunitat Valenciana elegeix 33 dels 350 diputats del Congrés: 12 en la província d'Alacant, 16 en la de València i 5 en la de Castelló. Estos són els resultats de les eleccions generals del 23 de juliol de 2023 en la Comunitat, en les províncies, en les comarques de l'Alcoià, el Comtat i la Foia de Castalla i a Alcoi, secció a secció.</p>`;
+        ? `<p>La Comunitat Valenciana elegeix 33 dels 350 diputats del Congrés: 12 en la província d'Alacant, 16 en la de València i 5 en la de Castelló. Estos són els resultats provisionals de les eleccions generals del ${D.data_text} en la Comunitat, en les comarques de l'Alcoià, el Comtat i la Foia de Castalla i en cada municipi de les tres províncies, a mesura que avança l'escrutini.</p>`
+        : `<p>La Comunitat Valenciana elegeix 33 dels 350 diputats del Congrés: 12 en la província d'Alacant, 16 en la de València i 5 en la de Castelló. Estos són els resultats de les eleccions generals del 23 de juliol de 2023 en la Comunitat, en les comarques de l'Alcoià, el Comtat i la Foia de Castalla i en cada municipi de les tres províncies.</p>`;
     }
     if (seccio === 'font') {
       return directe
-        ? `<p>Font: Ministeri de l'Interior, escrutini provisional (el resultat oficial el fixa l'escrutini general). Escons calculats amb el sistema D'Hondt a partir de l'escrutini provisional. Els resultats per seccions censals d'Alcoi són del 23 de juliol de 2023. Seccions censals i carrerer: <a href="https://www.ine.es/dyngs/DAB/es/index.htm?cid=1390" target="_top">Institut Nacional d'Estadística</a>.</p>`
-        : `<p>Font: <a href="https://dadesobertes.gva.es/va/dataset/pre-result-elec-general-2023" target="_top">Generalitat Valenciana, Resultats d'eleccions generals 2023</a>, a partir de dades del Ministeri de l'Interior. Seccions censals i carrerer: <a href="https://www.ine.es/dyngs/DAB/es/index.htm?cid=1390" target="_top">Institut Nacional d'Estadística</a>.</p>`;
+        ? `<p>Font: Ministeri de l'Interior, escrutini provisional (el resultat oficial el fixa l'escrutini general). Escons calculats amb el sistema D'Hondt a partir de l'escrutini provisional. Límits municipals: Institut Geogràfic Nacional.</p>`
+        : `<p>Font: <a href="https://dadesobertes.gva.es/va/dataset/pre-result-elec-general-2023" target="_top">Generalitat Valenciana, Resultats d'eleccions generals 2023</a>, a partir de dades del Ministeri de l'Interior. Límits municipals: Institut Geogràfic Nacional.</p>`;
     }
     return '';
   }
   const sec = new URLSearchParams(location.search).get('seccio');
   const totes = ['cv', 'provincies', 'comarques', 'alcoi'];
-  document.getElementById('text').innerHTML = (sec && (totes.includes(sec) || sec === 'intro' || sec === 'font') ? [sec] : totes).map(bloc).join('');
+  document.getElementById('text').innerHTML = (sec && (totes.includes(sec) || ['intro', 'font', 'escrutini'].includes(sec)) ? [sec] : totes).map(bloc).join('');
 });
 </script>
 
