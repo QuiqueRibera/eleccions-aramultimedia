@@ -76,6 +76,7 @@ table.dades thead th{position:sticky;top:0;background:#fff;border-bottom:2px sol
 
 .am-directe{border-left:4px solid var(--blau);background:#e6f7fd;padding:6px 10px;margin:0 0 12px;font-size:.88rem}
 .am-text a{color:#005c7a;text-decoration:underline}
+.am-text .am-directe{margin:0 0 4px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
@@ -168,7 +169,9 @@ function selectorMode(el, onChange, inicial = 'guanyador') {
 }
 function tooltipHTML(titol, u, extra = '') {
   if (!teDades(u)) return `<h4>${esc(titol)}</h4><span class="nota">Encara sense dades</span>`;
-  const files = PARTITS.map(p => `<tr><td><span class="punt" style="background:${p.color}"></span>${p.nom}</td><td class="n"><b>${fmtP(pct(u.vots[p.k], u))}</b></td><td class="n">${fmtN(u.vots[p.k])}</td></tr>`).join('');
+  /* De més a menys vots; Altres, sempre al final */
+  const ordre = PARTITS.filter(p => p.k !== 'ALTRES').sort((a, b) => (u.vots[b.k] || 0) - (u.vots[a.k] || 0)).concat(PARTITS.filter(p => p.k === 'ALTRES'));
+  const files = ordre.map(p => `<tr><td><span class="punt" style="background:${p.color}"></span>${p.nom}</td><td class="n"><b>${fmtP(pct(u.vots[p.k], u))}</b></td><td class="n">${fmtN(u.vots[p.k])}</td></tr>`).join('');
   return `<h4>${esc(titol)}</h4>${extra}<table>${files}</table><div class="nota" style="margin-top:4px">Participació: <b>${fmtP(participacio(u))}</b> · Cens: ${fmtN(u.cens)}</div>`;
 }
 function mapa(wrap, features, getUnit, getTitle, opts = {}) {
@@ -251,7 +254,7 @@ function amIniciar(dadesFixes, inici) {
       document.querySelectorAll('.am-font').forEach(e => { e.innerHTML = (directe.font_per_pagina && directe.font_per_pagina[viz]) || directe.font_html; });
       if (cont && directe.escrutat != null && !cont.classList.contains('am-text')) cont.insertAdjacentHTML('afterbegin', `<div class="am-directe"><b>${directe.escrutat < 100 ? 'Escrutini provisional' : 'Escrutini provisional completat'}: ${fmtP(directe.escrutat)} escrutat</b> en la Comunitat Valenciana · Actualitzat a les ${esc(directe.hora)}</div>`);
     }
-    try { inici(dades, !!directe); } catch (e) { console.error(e); if (directe) { pinta(dadesFixes, null); } }
+    try { inici(dades, directe); } catch (e) { console.error(e); if (directe) { pinta(dadesFixes, null); } }
   }
   /* AM_DIRECTE_URL: una adreça o una llista (s'usa la primera que responga) */
   const urls = (typeof AM_DIRECTE_URL === 'undefined' ? [] : [].concat(AM_DIRECTE_URL)).filter(Boolean);
