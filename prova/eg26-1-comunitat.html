@@ -253,11 +253,17 @@ function amIniciar(dadesFixes, inici) {
     }
     try { inici(dades, !!directe); } catch (e) { console.error(e); if (directe) { pinta(dadesFixes, null); } }
   }
-  const url = typeof AM_DIRECTE_URL === 'string' && AM_DIRECTE_URL;
-  if (!url) { pinta(dadesFixes, null); return; }
-  function consulta(primera) {
-    fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now(), { cache: 'no-store' })
+  /* AM_DIRECTE_URL: una adreça o una llista (s'usa la primera que responga) */
+  const urls = (typeof AM_DIRECTE_URL === 'undefined' ? [] : [].concat(AM_DIRECTE_URL)).filter(Boolean);
+  if (!urls.length) { pinta(dadesFixes, null); return; }
+  function baixa(i) {
+    const url = urls[i];
+    return fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now(), { cache: 'no-store' })
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .catch(e => i + 1 < urls.length ? baixa(i + 1) : Promise.reject(e));
+  }
+  function consulta(primera) {
+    baixa(0)
       .then(j => {
         if (!j || !j.actiu || !j.pagines || !j.pagines[viz]) { if (primera) pinta(dadesFixes, null); return; }
         if (j.versio === versio) return;
@@ -291,7 +297,7 @@ function amIniciar(dadesFixes, inici) {
   <p class="font am-font">Font: <a href="https://dadesobertes.gva.es/va/dataset/pre-result-elec-general-2023" target="_blank" rel="noopener">Generalitat Valenciana, Resultats d'eleccions generals 2023</a>, a partir de dades del Ministeri de l'Interior. Escons calculats amb el sistema D'Hondt, coincidents amb el resultat oficial. Elaboració: ARAmultimèdia.</p>
 </div>
 <script>
-const AM_DIRECTE_URL = "https://quiqueribera.github.io/eleccions-aramultimedia/prova/prova-29n.json";
+const AM_DIRECTE_URL = ["https://raw.githubusercontent.com/QuiqueRibera/eleccions-aramultimedia/main/prova/prova-29n.json"];
 const DADES = {"cv":{"cens":3736481,"votants":2671610,"nuls":27327,"blancs":20040,"valids":2644283,"vots":{"PP":922064,"PSOE":849620,"VOX":413703,"SUMAR-COMPROMÍS":402813,"ALTRES":36043},"escons":{"PP":13,"PSOE":11,"VOX":5,"SUMAR-COMPROMÍS":4,"ALTRES":0},"nom":"Comunitat Valenciana","total_escons":33},"provincies":{"03":{"nom":"Alacant","cens":1306311,"votants":908842,"nuls":9650,"blancs":6575,"valids":899192,"vots":{"PP":330293,"PSOE":287737,"VOX":146133,"SUMAR-COMPROMÍS":115787,"ALTRES":12667},"escons":{"PP":5,"PSOE":4,"VOX":2,"SUMAR-COMPROMÍS":1,"ALTRES":0},"total_escons":12},"46":{"nom":"València","cens":1999340,"votants":1451187,"nuls":14026,"blancs":10810,"valids":1437161,"vots":{"PP":483469,"PSOE":461353,"VOX":218657,"SUMAR-COMPROMÍS":242839,"ALTRES":20033},"escons":{"PP":6,"PSOE":5,"VOX":2,"SUMAR-COMPROMÍS":3,"ALTRES":0},"total_escons":16},"12":{"nom":"Castelló","cens":430830,"votants":311581,"nuls":3651,"blancs":2655,"valids":307930,"vots":{"PP":108302,"PSOE":100530,"VOX":48913,"SUMAR-COMPROMÍS":44187,"ALTRES":3343},"escons":{"PP":2,"PSOE":2,"VOX":1,"SUMAR-COMPROMÍS":0,"ALTRES":0},"total_escons":5}}};
 amIniciar(DADES, (D, directe) => {
   const cv = D.cv;
