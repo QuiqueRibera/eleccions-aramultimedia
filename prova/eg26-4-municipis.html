@@ -253,11 +253,17 @@ function amIniciar(dadesFixes, inici) {
     }
     try { inici(dades, !!directe); } catch (e) { console.error(e); if (directe) { pinta(dadesFixes, null); } }
   }
-  const url = typeof AM_DIRECTE_URL === 'string' && AM_DIRECTE_URL;
-  if (!url) { pinta(dadesFixes, null); return; }
-  function consulta(primera) {
-    fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now(), { cache: 'no-store' })
+  /* AM_DIRECTE_URL: una adreça o una llista (s'usa la primera que responga) */
+  const urls = (typeof AM_DIRECTE_URL === 'undefined' ? [] : [].concat(AM_DIRECTE_URL)).filter(Boolean);
+  if (!urls.length) { pinta(dadesFixes, null); return; }
+  function baixa(i) {
+    const url = urls[i];
+    return fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now(), { cache: 'no-store' })
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .catch(e => i + 1 < urls.length ? baixa(i + 1) : Promise.reject(e));
+  }
+  function consulta(primera) {
+    baixa(0)
       .then(j => {
         if (!j || !j.actiu || !j.pagines || !j.pagines[viz]) { if (primera) pinta(dadesFixes, null); return; }
         if (j.versio === versio) return;
