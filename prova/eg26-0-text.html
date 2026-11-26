@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ca-valencia">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Text dels resultats · ARAmultimèdia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>:root{--fons:#ffffff;--text:#000000;--blau:#00b1ea;--gris:#555555;--gris-clar:#e6e6e6;--linia:#d0d0d0}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--fons);color:var(--text);font-family:Ubuntu,sans-serif;font-size:16px;line-height:1.45}
+.am-viz{max-width:980px;margin:0 auto;padding:16px 12px 12px}
+.am-viz h2{font-size:1.35rem;line-height:1.2;margin:0 0 4px}
+.am-viz .entradeta{margin:0 0 14px;color:var(--gris);font-size:.95rem}
+.am-viz h3{font-size:1.05rem;margin:18px 0 8px}
+.kpis{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 14px}
+.kpi{border-top:3px solid var(--blau);padding:6px 10px 4px 0;min-width:120px}
+.kpi b{display:block;font-size:1.5rem;line-height:1.1}
+.kpi span{font-size:.8rem;color:var(--gris)}
+.pestanyes{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}
+.pestanyes button,.btn{font:inherit;font-size:.9rem;border:1px solid var(--text);background:#fff;color:var(--text);padding:6px 12px;border-radius:4px;cursor:pointer}
+.pestanyes button[aria-selected="true"],.btn.actiu{background:var(--blau);border-color:var(--blau);color:#000;font-weight:700}
+.pestanyes button:focus-visible,.btn:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--blau);outline-offset:2px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:6px 0 10px;font-size:.9rem}
+.controls label{display:flex;gap:6px;align-items:center}
+select,input[type=search],input[type=text],input[type=number]{font:inherit;font-size:.95rem;padding:6px 8px;border:1px solid #888;border-radius:4px;background:#fff;color:#000}
+.graella{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+@media (max-width:720px){.graella{grid-template-columns:1fr}}
+.barres{width:100%}
+.barra-fila{display:grid;grid-template-columns:136px 1fr 92px;align-items:center;gap:8px;margin:0 0 7px;font-size:.9rem}
+.barra-fila .nom{font-weight:700;line-height:1.15}
+.barra-fila .pista{position:relative;height:18px;background:#f3f3f3;border-radius:0 4px 4px 0}
+.barra-fila .omplit{position:absolute;left:0;top:0;bottom:0;border-radius:0 4px 4px 0}
+.barra-fila .val{text-align:right;font-variant-numeric:tabular-nums}
+.barra-fila .val small{display:block;color:var(--gris);font-size:.75rem}
+.punt{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.llegenda{display:flex;flex-wrap:wrap;gap:12px;font-size:.85rem;margin:6px 0}
+.llegenda span{display:inline-flex;align-items:center}
+.mapa-wrap{position:relative;width:100%}
+.mapa-wrap svg{width:100%;height:auto;display:block}
+.mapa-wrap path.unitat{stroke:#fff;stroke-width:.6;cursor:pointer;vector-effect:non-scaling-stroke}
+.mapa-wrap svg{touch-action:pan-y}
+.zoom-btns{display:flex;gap:4px;justify-content:flex-end;margin-bottom:4px}
+.zoom-btns .btn{padding:2px 9px;font-size:.85rem;background:rgba(255,255,255,.92)}
+.mapa-wrap path.unitat:hover,.mapa-wrap path.unitat.marcat{stroke:#000;stroke-width:2}
+.mapa-wrap path.contorn{fill:none;stroke:#000;stroke-width:1.2;pointer-events:none;vector-effect:non-scaling-stroke}
+.tooltip{position:absolute;pointer-events:none;background:#fff;color:#000;border:1px solid #000;border-radius:4px;padding:8px 10px;font-size:.82rem;line-height:1.35;box-shadow:0 2px 8px rgba(0,0,0,.15);max-width:260px;z-index:10;display:none}
+.tooltip h4{margin:0 0 4px;font-size:.9rem}
+.tooltip table{border-collapse:collapse;width:100%}
+.tooltip td{padding:1px 0}
+.tooltip td.n{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums;padding-left:8px}
+.escala{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--gris);margin-top:4px}
+.escala .grad{height:10px;flex:0 0 160px;border-radius:2px}
+details.taula{margin:14px 0 4px;font-size:.88rem}
+details.taula summary{cursor:pointer;color:#000;font-weight:700;text-decoration:underline;text-decoration-color:var(--blau);text-decoration-thickness:2px}
+.taula-scroll{max-height:360px;overflow:auto;border:1px solid var(--linia);margin-top:8px}
+table.dades{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+table.dades th,table.dades td{padding:4px 6px;border-bottom:1px solid var(--gris-clar);text-align:right;white-space:nowrap}
+table.dades th:first-child,table.dades td:first-child{text-align:left;white-space:normal}
+table.dades thead th{position:sticky;top:0;background:#fff;border-bottom:2px solid #000}
+.font{font-size:.75rem;color:var(--gris);margin-top:14px;border-top:1px solid var(--gris-clar);padding-top:8px}
+.font a{color:#000;text-decoration-color:var(--blau)}
+.seients svg{width:100%;height:auto;display:block}
+.nota{font-size:.8rem;color:var(--gris)}
+.resultat-carrer{border-left:4px solid var(--blau);padding:8px 12px;margin:10px 0;background:#fff}
+.suggeriments{list-style:none;margin:2px 0 0;padding:0;border:1px solid #888;border-radius:4px;max-height:220px;overflow:auto;position:absolute;background:#fff;z-index:20;width:100%}
+.suggeriments li{padding:6px 8px;cursor:pointer;font-size:.9rem}
+.suggeriments li:hover,.suggeriments li[aria-selected="true"]{background:#e6f7fd}
+.cercador{position:relative;flex:1 1 260px;max-width:420px}
+.cercador input{width:100%}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+.am-text{padding:0;max-width:none;font-size:13.6px;color:#333}
+.am-text p{margin:0 0 .75em;line-height:1.4;text-align:justify}
+.am-text strong{font-weight:700}
+
+.am-directe{border-left:4px solid var(--blau);background:#e6f7fd;padding:6px 10px;margin:0 0 12px;font-size:.88rem}
+.am-text a{color:#005c7a;text-decoration:underline}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+</head>
+<body data-viz="eg26-0-text">
+<script>/* ARAmultimèdia · Eleccions generals · funcions comunes */
+/* Partits: per defecte, els del 23J. Les dades en directe poden portar la seua llista (camp "partits") */
+let PARTITS = [
+  { k: 'PP', nom: 'PP', color: '#1d5fb4', text: '#1d5fb4', max: 70, art: { el: 'el PP', El: 'El PP', del: 'del PP', al: 'al PP' } },
+  { k: 'PSOE', nom: 'PSOE', color: '#c8001a', text: '#c8001a', max: 70, art: { el: 'el PSOE', El: 'El PSOE', del: 'del PSOE', al: 'al PSOE' } },
+  { k: 'VOX', nom: 'Vox', color: '#7cc04a', text: '#4c8a26', max: 40, art: { el: 'Vox', El: 'Vox', del: 'de Vox', al: 'a Vox' } },
+  { k: 'SUMAR-COMPROMÍS', nom: 'Sumar-Compromís', color: '#9b2a8f', text: '#9b2a8f', max: 40, art: { el: 'Sumar-Compromís', El: 'Sumar-Compromís', del: 'de Sumar-Compromís', al: 'a Sumar-Compromís' } },
+  { k: 'ALTRES', nom: 'Altres', color: '#9a9a9a', text: '#555555', max: 15, art: { el: 'altres', El: 'Altres', del: "d'altres", al: 'a altres' } }
+];
+let P = Object.fromEntries(PARTITS.map(p => [p.k, p]));
+function definirPartits(llista) { if (llista && llista.length) { PARTITS = llista; P = Object.fromEntries(PARTITS.map(p => [p.k, p])); } }
+const PRINCIPALS = () => PARTITS.filter(p => p.k !== 'ALTRES').map(p => p.k);
+const teDades = u => !!(u && u.vots && u.valids != null);
+const fmtN = n => new Intl.NumberFormat('ca-ES').format(n);
+const fmtP = (x, d = 1) => new Intl.NumberFormat('ca-ES', { minimumFractionDigits: d, maximumFractionDigits: d }).format(x) + '\u00a0%';
+const pct = (v, u) => (u.valids ? 100 * v / u.valids : 0);
+const participacio = u => (u.cens ? 100 * u.votants / u.cens : 0);
+function guanyador(u) {
+  let best = null;
+  for (const p of PARTITS) { if (p.k === 'ALTRES') continue; if (!best || u.vots[p.k] > u.vots[best]) best = p.k; }
+  return best;
+}
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/* Barres horitzontals amb etiqueta directa (nom, %, vots i escons opcionals) */
+function barres(el, u, opts = {}) {
+  const max = opts.max || Math.max(...PARTITS.map(p => pct(u.vots[p.k], u)));
+  el.innerHTML = PARTITS.map(p => {
+    const v = u.vots[p.k] || 0, x = pct(v, u);
+    const esc_ = (u.escons && p.k !== 'ALTRES') ? ` · ${u.escons[p.k]} ${u.escons[p.k] === 1 ? 'escó' : 'escons'}` : '';
+    return `<div class="barra-fila" role="listitem"><span class="nom"><span class="punt" style="background:${p.color}"></span>${p.nom}</span>
+      <span class="pista"><span class="omplit" style="width:${(100 * x / max).toFixed(2)}%;background:${p.color}"></span></span>
+      <span class="val"><b>${fmtP(x)}</b><small>${fmtN(v)} vots${esc_}</small></span></div>`;
+  }).join('');
+  el.setAttribute('role', 'list');
+}
+
+/* Hemicicle d'escons */
+function hemicicle(el, escons, total) {
+  const W = 420, cx = W / 2;
+  const files = total <= 8 ? 1 : total <= 20 ? 2 : 3;
+  const rMax = 190, rMin = files === 1 ? rMax : rMax * (files === 2 ? 0.62 : 0.5);
+  const radis = d3.range(files).map(i => files === 1 ? rMax : rMin + (rMax - rMin) * i / (files - 1));
+  const suma = radis.reduce((a, b) => a + b, 0);
+  const n = radis.map(r => Math.round(total * r / suma)); n[n.length - 1] += total - n.reduce((a, b) => a + b, 0);
+  const pas = Math.min(...radis.map((r, i) => Math.PI * r / Math.max(1, n[i] - 1)));
+  const rr = Math.min(18, pas * 0.42, files > 1 ? (rMax - rMin) / (files - 1) * 0.42 : 18);
+  const cy = rMax + rr + 2;
+  const seients = [];
+  radis.forEach((r, i) => { for (let j = 0; j < n[i]; j++) { const a = Math.PI * (1 - (n[i] === 1 ? .5 : j / (n[i] - 1))); seients.push({ a, r, x: cx + r * Math.cos(a), y: cy - r * Math.sin(a) }); } });
+  seients.sort((s1, s2) => d3.descending(s1.a, s2.a) || d3.ascending(s1.r, s2.r));
+  const ordre = PARTITS.filter(p => p.k !== 'ALTRES' && escons[p.k] > 0).sort((a, b) => escons[b.k] - escons[a.k]);
+  const colors = []; ordre.forEach(p => { for (let i = 0; i < escons[p.k]; i++) colors.push(p); });
+  el.innerHTML = `<svg viewBox="0 ${(rMax - (files === 1 ? rMax : rMax)) - 4} ${W} ${cy + rr + 8}" role="img" aria-label="Hemicicle: ${ordre.map(p => p.nom + ' ' + escons[p.k]).join(', ')}">
+    ${seients.map((s, i) => `<circle cx="${s.x.toFixed(1)}" cy="${s.y.toFixed(1)}" r="${rr.toFixed(1)}" fill="${colors[i] ? colors[i].color : '#eee'}" stroke="#fff" stroke-width="2"><title>${colors[i] ? colors[i].nom : ''}</title></circle>`).join('')}
+    <text x="${cx}" y="${cy - 26}" text-anchor="middle" font-size="44" font-weight="700">${total}</text>
+    <text x="${cx}" y="${cy - 4}" text-anchor="middle" font-size="15" fill="#555">escons</text></svg>`;
+}
+function llegendaEscons(el, escons) {
+  el.innerHTML = PARTITS.filter(p => p.k !== 'ALTRES' && escons[p.k] > 0).sort((a, b) => escons[b.k] - escons[a.k])
+    .map(p => `<span><span class="punt" style="background:${p.color}"></span><b>${p.nom}</b>&nbsp;${escons[p.k]}</span>`).join('');
+}
+
+/* Mapa coroplètic: mode 'guanyador', 'part' o un partit */
+function colorUnitat(u, mode) {
+  if (!teDades(u)) return '#eeeeee';
+  if (mode === 'guanyador') return P[guanyador(u)].color;
+  if (mode === 'part') return d3.interpolateRgb('#e8f7fd', '#00597a')(Math.max(0, Math.min(1, (participacio(u) - 40) / 50)));
+  const p = P[mode]; const x = pct(u.vots[mode], u);
+  return d3.interpolateRgb('#f4f4f4', p.color)(Math.max(0, Math.min(1, x / escalaMax(mode))));
+}
+function escalaMax(mode) { return (P[mode] && P[mode].max) || 60; }
+function escalaHTML(mode) {
+  if (mode === 'guanyador') return '<div class="llegenda">' + PARTITS.filter(p => p.k !== 'ALTRES').map(p => `<span><span class="punt" style="background:${p.color}"></span>${p.nom}</span>`).join('') + '<span class="nota">Color: partit més votat</span></div>';
+  if (mode === 'part') return `<div class="escala"><span>40 %</span><span class="grad" style="background:linear-gradient(90deg,#e8f7fd,#00597a)"></span><span>90 % o més</span><span>· participació</span></div>`;
+  const p = P[mode];
+  return `<div class="escala"><span>0 %</span><span class="grad" style="background:linear-gradient(90deg,#f4f4f4,${p.color})"></span><span>${escalaMax(mode)} % o més</span><span>· vot a ${p.nom}</span></div>`;
+}
+function selectorMode(el, onChange, inicial = 'guanyador') {
+  el.innerHTML = `<label>Color del mapa <select aria-label="Què mostra el mapa">
+    <option value="guanyador">Partit més votat</option>
+    ${PARTITS.map(p => `<option value="${p.k}">% de vot: ${p.nom}</option>`).join('')}
+    <option value="part">Participació</option></select></label>`;
+  const s = el.querySelector('select'); s.value = inicial; s.addEventListener('change', () => onChange(s.value));
+}
+function tooltipHTML(titol, u, extra = '') {
+  if (!teDades(u)) return `<h4>${esc(titol)}</h4><span class="nota">Encara sense dades</span>`;
+  const files = PARTITS.map(p => `<tr><td><span class="punt" style="background:${p.color}"></span>${p.nom}</td><td class="n"><b>${fmtP(pct(u.vots[p.k], u))}</b></td><td class="n">${fmtN(u.vots[p.k])}</td></tr>`).join('');
+  return `<h4>${esc(titol)}</h4>${extra}<table>${files}</table><div class="nota" style="margin-top:4px">Participació: <b>${fmtP(participacio(u))}</b> · Cens: ${fmtN(u.cens)}</div>`;
+}
+function mapa(wrap, features, getUnit, getTitle, opts = {}) {
+  const W = opts.width || 600, H = opts.height || 600;
+  const proj = d3.geoMercator().fitSize([W, H], { type: 'FeatureCollection', features });
+  const path = d3.geoPath(proj);
+  wrap.innerHTML = '';
+  const svg = d3.select(wrap).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', opts.label || 'Mapa de resultats');
+  const tip = d3.select(wrap).append('div').attr('class', 'tooltip');
+  const g = svg.append('g');
+  const sel = g.selectAll('path').data(features).join('path').attr('class', 'unitat').attr('d', path);
+  if (opts.contorn) g.append('path').attr('class', 'contorn').attr('d', path(opts.contorn));
+  if (opts.zoom) {
+    const z = d3.zoom().scaleExtent([1, 12]).translateExtent([[0, 0], [W, H]])
+      .filter(ev => ev.type !== 'wheel' || ev.ctrlKey || ev.metaKey)
+      .on('zoom', ev => g.attr('transform', ev.transform));
+    svg.call(z);
+    const bt = d3.select(wrap).insert('div', ':first-child').attr('class', 'zoom-btns');
+    bt.append('button').attr('class', 'btn').attr('aria-label', 'Apropa').text('+').on('click', () => svg.transition().call(z.scaleBy, 1.8));
+    bt.append('button').attr('class', 'btn').attr('aria-label', 'Allunya').text('−').on('click', () => svg.transition().call(z.scaleBy, 1 / 1.8));
+    bt.append('button').attr('class', 'btn').text('Tot el terme').on('click', () => svg.transition().call(z.transform, d3.zoomIdentity));
+    wrap._zoomTo = (f, frac = 0.35) => { const [[x0, y0], [x1, y1]] = path.bounds(f); const k = Math.min(6, frac / Math.max((x1 - x0) / W, (y1 - y0) / H)); svg.transition().duration(600).call(z.transform, d3.zoomIdentity.translate(W / 2, H / 2).scale(k).translate(-(x0 + x1) / 2, -(y0 + y1) / 2)); };
+  }
+  let mode = opts.mode || 'guanyador';
+  function pinta() { sel.attr('fill', f => colorUnitat(getUnit(f), mode)); }
+  function mostra(ev, f) {
+    const r = wrap.getBoundingClientRect();
+    tip.html(tooltipHTML(getTitle(f), getUnit(f), opts.extra ? opts.extra(f) : '')).style('display', 'block');
+    const tw = tip.node().offsetWidth, th = tip.node().offsetHeight;
+    let x = ev.clientX - r.left + 14, y = ev.clientY - r.top + 14;
+    if (x + tw > r.width) x = Math.max(0, ev.clientX - r.left - tw - 14);
+    if (y + th > r.height) y = Math.max(0, ev.clientY - r.top - th - 14);
+    tip.style('left', x + 'px').style('top', y + 'px');
+  }
+  sel.on('mousemove', mostra).on('mouseleave', () => tip.style('display', 'none'))
+    .on('click', (ev, f) => { mostra(ev, f); if (opts.onClick) opts.onClick(f); });
+  pinta();
+  if (opts.etiquetes) opts.etiquetes.forEach(e => { const [x, y] = path.centroid(e.f); g.append('text').attr('x', x).attr('y', y).attr('text-anchor', 'middle').attr('font-size', 15).attr('font-weight', 700).attr('paint-order', 'stroke').attr('stroke', '#fff').attr('stroke-width', 4).attr('pointer-events', 'none').text(e.t); });
+  return {
+    setMode(m) { mode = m; pinta(); },
+    marca(ids) { const s = new Set(ids); sel.classed('marcat', f => s.has(f.properties.id)); sel.filter(f => s.has(f.properties.id)).raise(); g.selectAll('path.contorn, text').raise(); },
+    zoomA(ids, frac) { if (!wrap._zoomTo) return; const s = new Set(ids); const fs = features.filter(f => s.has(f.properties.id)); if (fs.length) wrap._zoomTo({ type: 'FeatureCollection', features: fs }, fs.length > 3 ? 0.92 : frac); },
+    mostraId(id) {
+      const f = features.find(f => f.properties.id === id); if (!f) return;
+      const t = d3.zoomTransform(svg.node()); const [x0, y0] = path.centroid(f); const [x, y] = t.apply([x0, y0]);
+      const r = svg.node().getBoundingClientRect(); const k = r.width / W;
+      mostra({ clientX: r.left + Math.max(0, Math.min(W, x)) * k, clientY: r.top + Math.max(0, Math.min(H, y)) * k }, f);
+    },
+    amaga() { tip.style('display', 'none'); }
+  };
+}
+function taula(el, files, titolUnitat) {
+  el.innerHTML = `<div class="taula-scroll"><table class="dades"><thead><tr><th>${titolUnitat}</th>${PARTITS.map(p => `<th>${p.nom}</th>`).join('')}<th>Particip.</th></tr></thead>
+  <tbody>${files.filter(([, u]) => teDades(u)).map(([nom, u]) => `<tr><td>${esc(nom)}</td>${PARTITS.map(p => `<td>${fmtP(pct(u.vots[p.k], u))}</td>`).join('')}<td>${fmtP(participacio(u))}</td></tr>`).join('')}</tbody></table></div>`;
+}
+/* Alçada automàtica per a iframe: la pàgina no té scroll propi i el desplaçament passa a la web */
+(function () {
+  if (window.self === window.top) return;
+  document.documentElement.style.overflow = 'hidden';
+  function envia() { parent.postMessage({ tipus: 'am-iframe-altura', id: document.body.dataset.viz, altura: Math.ceil(document.documentElement.getBoundingClientRect().height) + 4 }, '*'); }
+  window.addEventListener('load', envia);
+  if ('ResizeObserver' in window) new ResizeObserver(envia).observe(document.documentElement);
+  setInterval(envia, 1500);
+})();
+
+/* ---- Dades en directe ----
+   AM_DIRECTE_URL (posat per build_html.py) apunta a un JSON que el script directe.py actualitza la nit electoral.
+   Si el fitxer no existix o no respon, la pàgina mostra les dades que porta dins (23J). */
+const AM_ESTAT = {};
+function amIniciar(dadesFixes, inici) {
+  const cont = document.querySelector('.am-viz');
+  const plantilla = cont ? cont.innerHTML : '';
+  const viz = document.body.dataset.viz;
+  let versio = null;
+  function pinta(dades, directe) {
+    if (cont) cont.innerHTML = plantilla;
+    definirPartits(directe ? directe.partits : null);
+    if (directe) {
+      document.querySelectorAll('.am-data').forEach(e => { e.textContent = directe.data_text; });
+      document.querySelectorAll('.am-font').forEach(e => { e.innerHTML = (directe.font_per_pagina && directe.font_per_pagina[viz]) || directe.font_html; });
+      if (cont && directe.escrutat != null && !cont.classList.contains('am-text')) cont.insertAdjacentHTML('afterbegin', `<div class="am-directe"><b>${directe.escrutat < 100 ? 'Escrutini provisional' : 'Escrutini provisional completat'}: ${fmtP(directe.escrutat)} escrutat</b> en la Comunitat Valenciana · Actualitzat a les ${esc(directe.hora)}</div>`);
+    }
+    try { inici(dades, !!directe); } catch (e) { console.error(e); if (directe) { pinta(dadesFixes, null); } }
+  }
+  const url = typeof AM_DIRECTE_URL === 'string' && AM_DIRECTE_URL;
+  if (!url) { pinta(dadesFixes, null); return; }
+  function consulta(primera) {
+    fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now(), { cache: 'no-store' })
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(j => {
+        if (!j || !j.actiu || !j.pagines || !j.pagines[viz]) { if (primera) pinta(dadesFixes, null); return; }
+        if (j.versio === versio) return;
+        versio = j.versio; pinta(j.pagines[viz], j);
+      })
+      .catch(() => { if (primera) pinta(dadesFixes, null); });
+  }
+  consulta(true);
+  setInterval(() => consulta(false), 60000);
+}
+</script>
+<div class="am-viz am-text" id="text" aria-live="polite"></div>
+<script>
+const AM_DIRECTE_URL = "https://quiqueribera.github.io/eleccions-aramultimedia/prova/prova-29n.json";
+const DADES = {"escrutat":null,"cv":{"cens":3736481,"votants":2671610,"nuls":27327,"blancs":20040,"valids":2644283,"vots":{"PP":922064,"PSOE":849620,"VOX":413703,"SUMAR-COMPROMÍS":402813,"ALTRES":36043},"escons":{"PP":13,"PSOE":11,"VOX":5,"SUMAR-COMPROMÍS":4,"ALTRES":0},"nom":"Comunitat Valenciana","total_escons":33},"provincies":{"03":{"nom":"Alacant","cens":1306311,"votants":908842,"nuls":9650,"blancs":6575,"valids":899192,"vots":{"PP":330293,"PSOE":287737,"VOX":146133,"SUMAR-COMPROMÍS":115787,"ALTRES":12667},"escons":{"PP":5,"PSOE":4,"VOX":2,"SUMAR-COMPROMÍS":1,"ALTRES":0},"total_escons":12},"46":{"nom":"València","cens":1999340,"votants":1451187,"nuls":14026,"blancs":10810,"valids":1437161,"vots":{"PP":483469,"PSOE":461353,"VOX":218657,"SUMAR-COMPROMÍS":242839,"ALTRES":20033},"escons":{"PP":6,"PSOE":5,"VOX":2,"SUMAR-COMPROMÍS":3,"ALTRES":0},"total_escons":16},"12":{"nom":"Castelló","cens":430830,"votants":311581,"nuls":3651,"blancs":2655,"valids":307930,"vots":{"PP":108302,"PSOE":100530,"VOX":48913,"SUMAR-COMPROMÍS":44187,"ALTRES":3343},"escons":{"PP":2,"PSOE":2,"VOX":1,"SUMAR-COMPROMÍS":0,"ALTRES":0},"total_escons":5}},"comarques":{"El Comtat":{"cens":21520,"votants":17024,"nuls":211,"blancs":105,"valids":16813,"vots":{"PP":5314,"PSOE":5818,"VOX":1935,"SUMAR-COMPROMÍS":3380,"ALTRES":261}},"L'Alcoià":{"cens":51737,"votants":38912,"nuls":427,"blancs":305,"valids":38485,"vots":{"PP":11279,"PSOE":14545,"VOX":4983,"SUMAR-COMPROMÍS":6827,"ALTRES":546}},"La Foia de Castalla":{"cens":33952,"votants":26032,"nuls":396,"blancs":203,"valids":25636,"vots":{"PP":9256,"PSOE":8067,"VOX":3671,"SUMAR-COMPROMÍS":4046,"ALTRES":393}}},"municipis_alacant":{"03001":{"nom":"Atzúbia, l'","cens":304,"votants":252,"nuls":6,"blancs":0,"valids":246,"vots":{"PP":105,"PSOE":45,"VOX":25,"SUMAR-COMPROMÍS":70,"ALTRES":1}},"03002":{"nom":"Agost","cens":3857,"votants":2833,"nuls":45,"blancs":20,"valids":2788,"vots":{"PP":1002,"PSOE":897,"VOX":433,"SUMAR-COMPROMÍS":394,"ALTRES":42}},"03003":{"nom":"Agres","cens":474,"votants":404,"nuls":4,"blancs":1,"valids":400,"vots":{"PP":150,"PSOE":97,"VOX":63,"SUMAR-COMPROMÍS":88,"ALTRES":1}},"03004":{"nom":"Aigües","cens":695,"votants":531,"nuls":5,"blancs":6,"valids":526,"vots":{"PP":175,"PSOE":184,"VOX":70,"SUMAR-COMPROMÍS":85,"ALTRES":6}},"03005":{"nom":"Albatera","cens":8203,"votants":6264,"nuls":45,"blancs":29,"valids":6219,"vots":{"PP":2610,"PSOE":1535,"VOX":1532,"SUMAR-COMPROMÍS":441,"ALTRES":72}},"03006":{"nom":"Alcalalí","cens":510,"votants":390,"nuls":4,"blancs":2,"valids":386,"vots":{"PP":121,"PSOE":105,"VOX":36,"SUMAR-COMPROMÍS":117,"ALTRES":5}},"03007":{"nom":"Alcosser","cens":199,"votants":170,"nuls":4,"blancs":1,"valids":166,"vots":{"PP":39,"PSOE":59,"VOX":18,"SUMAR-COMPROMÍS":47,"ALTRES":2}},"03008":{"nom":"Alcoleja","cens":164,"votants":135,"nuls":0,"blancs":0,"valids":135,"vots":{"PP":42,"PSOE":43,"VOX":31,"SUMAR-COMPROMÍS":19,"ALTRES":0}},"03009":{"nom":"Alcoi / Alcoy","cens":45849,"votants":34051,"nuls":351,"blancs":269,"valids":33700,"vots":{"PP":9501,"PSOE":13116,"VOX":4319,"SUMAR-COMPROMÍS":5993,"ALTRES":502}},"03010":{"nom":"Alfafara","cens":344,"votants":291,"nuls":6,"blancs":1,"valids":285,"vots":{"PP":96,"PSOE":93,"VOX":26,"SUMAR-COMPROMÍS":62,"ALTRES":7}},"03011":{"nom":"Alfàs del Pi, l'","cens":8416,"votants":5771,"nuls":71,"blancs":37,"valids":5700,"vots":{"PP":2001,"PSOE":1903,"VOX":1049,"SUMAR-COMPROMÍS":618,"ALTRES":92}},"03012":{"nom":"Algorfa","cens":1199,"votants":925,"nuls":8,"blancs":5,"valids":917,"vots":{"PP":348,"PSOE":274,"VOX":193,"SUMAR-COMPROMÍS":86,"ALTRES":11}},"03013":{"nom":"Algueña","cens":1045,"votants":814,"nuls":20,"blancs":5,"valids":794,"vots":{"PP":329,"PSOE":259,"VOX":133,"SUMAR-COMPROMÍS":61,"ALTRES":7}},"03014":{"nom":"Alacant / Alicante","cens":240657,"votants":168027,"nuls":1345,"blancs":1269,"valids":166682,"vots":{"PP":63296,"PSOE":51833,"VOX":26657,"SUMAR-COMPROMÍS":21069,"ALTRES":2558}},"03015":{"nom":"Almoradí","cens":13047,"votants":9568,"nuls":91,"blancs":55,"valids":9477,"vots":{"PP":3864,"PSOE":2625,"VOX":1890,"SUMAR-COMPROMÍS":935,"ALTRES":108}},"03016":{"nom":"Almudaina","cens":88,"votants":74,"nuls":1,"blancs":0,"valids":73,"vots":{"PP":33,"PSOE":11,"VOX":18,"SUMAR-COMPROMÍS":9,"ALTRES":2}},"03017":{"nom":"Alqueria d'Asnar, l'","cens":417,"votants":369,"nuls":5,"blancs":1,"valids":364,"vots":{"PP":83,"PSOE":154,"VOX":35,"SUMAR-COMPROMÍS":82,"ALTRES":9}},"03018":{"nom":"Altea","cens":12682,"votants":9310,"nuls":86,"blancs":65,"valids":9224,"vots":{"PP":3153,"PSOE":2945,"VOX":1034,"SUMAR-COMPROMÍS":1913,"ALTRES":114}},"03019":{"nom":"Aspe","cens":16000,"votants":12136,"nuls":151,"blancs":90,"valids":11985,"vots":{"PP":4418,"PSOE":3682,"VOX":2216,"SUMAR-COMPROMÍS":1407,"ALTRES":172}},"03020":{"nom":"Balones","cens":105,"votants":94,"nuls":1,"blancs":0,"valids":93,"vots":{"PP":33,"PSOE":42,"VOX":5,"SUMAR-COMPROMÍS":11,"ALTRES":2}},"03021":{"nom":"Banyeres de Mariola","cens":5533,"votants":4559,"nuls":73,"blancs":33,"valids":4486,"vots":{"PP":1668,"PSOE":1331,"VOX":640,"SUMAR-COMPROMÍS":771,"ALTRES":43}},"03022":{"nom":"Benasau","cens":150,"votants":126,"nuls":1,"blancs":2,"valids":125,"vots":{"PP":47,"PSOE":38,"VOX":16,"SUMAR-COMPROMÍS":20,"ALTRES":2}},"03023":{"nom":"Beneixama","cens":1347,"votants":1153,"nuls":27,"blancs":6,"valids":1126,"vots":{"PP":408,"PSOE":410,"VOX":115,"SUMAR-COMPROMÍS":177,"ALTRES":10}},"03024":{"nom":"Benejúzar","cens":3997,"votants":3148,"nuls":44,"blancs":28,"valids":3104,"vots":{"PP":1346,"PSOE":1012,"VOX":524,"SUMAR-COMPROMÍS":177,"ALTRES":17}},"03025":{"nom":"Benferri","cens":1380,"votants":1074,"nuls":10,"blancs":10,"valids":1064,"vots":{"PP":447,"PSOE":303,"VOX":233,"SUMAR-COMPROMÍS":62,"ALTRES":9}},"03026":{"nom":"Beniarbeig","cens":1497,"votants":1102,"nuls":7,"blancs":3,"valids":1095,"vots":{"PP":326,"PSOE":415,"VOX":139,"SUMAR-COMPROMÍS":197,"ALTRES":15}},"03027":{"nom":"Beniardà","cens":195,"votants":162,"nuls":2,"blancs":0,"valids":160,"vots":{"PP":51,"PSOE":65,"VOX":21,"SUMAR-COMPROMÍS":22,"ALTRES":1}},"03028":{"nom":"Beniarrés","cens":939,"votants":784,"nuls":9,"blancs":1,"valids":775,"vots":{"PP":248,"PSOE":286,"VOX":86,"SUMAR-COMPROMÍS":150,"ALTRES":4}},"03029":{"nom":"Benigembla","cens":244,"votants":181,"nuls":3,"blancs":0,"valids":178,"vots":{"PP":54,"PSOE":85,"VOX":11,"SUMAR-COMPROMÍS":25,"ALTRES":3}},"03030":{"nom":"Benidoleig","cens":601,"votants":491,"nuls":14,"blancs":2,"valids":477,"vots":{"PP":142,"PSOE":170,"VOX":57,"SUMAR-COMPROMÍS":95,"ALTRES":11}},"03031":{"nom":"Benidorm","cens":42612,"votants":27726,"nuls":232,"blancs":178,"valids":27494,"vots":{"PP":11088,"PSOE":9224,"VOX":3960,"SUMAR-COMPROMÍS":2727,"ALTRES":317}},"03032":{"nom":"Benifallim","cens":105,"votants":88,"nuls":0,"blancs":1,"valids":88,"vots":{"PP":38,"PSOE":18,"VOX":8,"SUMAR-COMPROMÍS":22,"ALTRES":1}},"03033":{"nom":"Benifato","cens":109,"votants":69,"nuls":0,"blancs":0,"valids":69,"vots":{"PP":26,"PSOE":17,"VOX":13,"SUMAR-COMPROMÍS":12,"ALTRES":1}},"03034":{"nom":"Benijófar","cens":1423,"votants":1110,"nuls":15,"blancs":5,"valids":1095,"vots":{"PP":507,"PSOE":325,"VOX":154,"SUMAR-COMPROMÍS":95,"ALTRES":9}},"03035":{"nom":"Benilloba","cens":619,"votants":501,"nuls":4,"blancs":1,"valids":497,"vots":{"PP":165,"PSOE":200,"VOX":51,"SUMAR-COMPROMÍS":78,"ALTRES":2}},"03036":{"nom":"Benillup","cens":87,"votants":81,"nuls":0,"blancs":0,"valids":81,"vots":{"PP":32,"PSOE":27,"VOX":2,"SUMAR-COMPROMÍS":19,"ALTRES":1}},"03037":{"nom":"Benimantell","cens":348,"votants":286,"nuls":9,"blancs":3,"valids":277,"vots":{"PP":75,"PSOE":110,"VOX":35,"SUMAR-COMPROMÍS":49,"ALTRES":5}},"03038":{"nom":"Benimarfull","cens":358,"votants":302,"nuls":4,"blancs":1,"valids":298,"vots":{"PP":122,"PSOE":101,"VOX":28,"SUMAR-COMPROMÍS":43,"ALTRES":3}},"03039":{"nom":"Benimassot","cens":98,"votants":79,"nuls":4,"blancs":0,"valids":75,"vots":{"PP":34,"PSOE":17,"VOX":8,"SUMAR-COMPROMÍS":15,"ALTRES":1}},"03040":{"nom":"Benimeli","cens":266,"votants":210,"nuls":4,"blancs":1,"valids":206,"vots":{"PP":67,"PSOE":47,"VOX":19,"SUMAR-COMPROMÍS":70,"ALTRES":2}},"03041":{"nom":"Benissa","cens":6221,"votants":4410,"nuls":48,"blancs":29,"valids":4362,"vots":{"PP":1469,"PSOE":1385,"VOX":561,"SUMAR-COMPROMÍS":876,"ALTRES":42}},"03042":{"nom":"Poble Nou de Benitatxell, el / Benitachell","cens":1553,"votants":1085,"nuls":13,"blancs":12,"valids":1072,"vots":{"PP":411,"PSOE":292,"VOX":155,"SUMAR-COMPROMÍS":187,"ALTRES":15}},"03043":{"nom":"Biar","cens":2903,"votants":2471,"nuls":37,"blancs":13,"valids":2434,"vots":{"PP":818,"PSOE":884,"VOX":262,"SUMAR-COMPROMÍS":447,"ALTRES":10}},"03044":{"nom":"Bigastro","cens":4865,"votants":3777,"nuls":42,"blancs":23,"valids":3735,"vots":{"PP":1695,"PSOE":1012,"VOX":722,"SUMAR-COMPROMÍS":253,"ALTRES":30}},"03045":{"nom":"Bolulla","cens":234,"votants":199,"nuls":6,"blancs":0,"valids":193,"vots":{"PP":88,"PSOE":59,"VOX":24,"SUMAR-COMPROMÍS":20,"ALTRES":2}},"03046":{"nom":"Busot","cens":1919,"votants":1360,"nuls":15,"blancs":12,"valids":1345,"vots":{"PP":447,"PSOE":431,"VOX":241,"SUMAR-COMPROMÍS":199,"ALTRES":15}},"03047":{"nom":"Calp","cens":10090,"votants":6513,"nuls":92,"blancs":41,"valids":6421,"vots":{"PP":2151,"PSOE":2214,"VOX":975,"SUMAR-COMPROMÍS":923,"ALTRES":117}},"03048":{"nom":"Callosa d'en Sarrià","cens":4972,"votants":3610,"nuls":68,"blancs":11,"valids":3542,"vots":{"PP":1500,"PSOE":945,"VOX":593,"SUMAR-COMPROMÍS":458,"ALTRES":35}},"03049":{"nom":"Callosa de Segura","cens":11978,"votants":8829,"nuls":95,"blancs":58,"valids":8734,"vots":{"PP":3430,"PSOE":2419,"VOX":1949,"SUMAR-COMPROMÍS":810,"ALTRES":68}},"03050":{"nom":"Campello, el","cens":20307,"votants":14442,"nuls":142,"blancs":120,"valids":14300,"vots":{"PP":5411,"PSOE":4184,"VOX":2281,"SUMAR-COMPROMÍS":2078,"ALTRES":226}},"03051":{"nom":"Camp de Mirra, el / Campo de Mirra","cens":365,"votants":320,"nuls":7,"blancs":0,"valids":313,"vots":{"PP":114,"PSOE":103,"VOX":39,"SUMAR-COMPROMÍS":52,"ALTRES":5}},"03052":{"nom":"Cañada","cens":965,"votants":788,"nuls":7,"blancs":3,"valids":781,"vots":{"PP":383,"PSOE":178,"VOX":114,"SUMAR-COMPROMÍS":97,"ALTRES":6}},"03053":{"nom":"Castalla","cens":8139,"votants":6242,"nuls":86,"blancs":34,"valids":6156,"vots":{"PP":2440,"PSOE":1649,"VOX":956,"SUMAR-COMPROMÍS":1000,"ALTRES":77}},"03054":{"nom":"Castell de Castells","cens":329,"votants":255,"nuls":1,"blancs":0,"valids":254,"vots":{"PP":79,"PSOE":96,"VOX":34,"SUMAR-COMPROMÍS":42,"ALTRES":3}},"03055":{"nom":"Catral","cens":5605,"votants":4064,"nuls":56,"blancs":33,"valids":4008,"vots":{"PP":1820,"PSOE":989,"VOX":809,"SUMAR-COMPROMÍS":313,"ALTRES":44}},"03056":{"nom":"Cocentaina","cens":8519,"votants":6542,"nuls":93,"blancs":38,"valids":6449,"vots":{"PP":2053,"PSOE":2276,"VOX":786,"SUMAR-COMPROMÍS":1217,"ALTRES":79}},"03057":{"nom":"Confrides","cens":216,"votants":176,"nuls":2,"blancs":1,"valids":174,"vots":{"PP":46,"PSOE":55,"VOX":48,"SUMAR-COMPROMÍS":21,"ALTRES":3}},"03058":{"nom":"Cox","cens":5058,"votants":4030,"nuls":36,"blancs":25,"valids":3994,"vots":{"PP":1931,"PSOE":899,"VOX":853,"SUMAR-COMPROMÍS":254,"ALTRES":32}},"03059":{"nom":"Crevillent","cens":21041,"votants":15612,"nuls":108,"blancs":67,"valids":15504,"vots":{"PP":5203,"PSOE":4197,"VOX":3613,"SUMAR-COMPROMÍS":2240,"ALTRES":184}},"03060":{"nom":"Quatretondeta","cens":117,"votants":94,"nuls":1,"blancs":0,"valids":93,"vots":{"PP":23,"PSOE":41,"VOX":5,"SUMAR-COMPROMÍS":23,"ALTRES":1}},"03061":{"nom":"Daya Nueva","cens":1104,"votants":867,"nuls":6,"blancs":3,"valids":861,"vots":{"PP":418,"PSOE":161,"VOX":215,"SUMAR-COMPROMÍS":52,"ALTRES":12}},"03062":{"nom":"Daya Vieja","cens":233,"votants":197,"nuls":1,"blancs":0,"valids":196,"vots":{"PP":89,"PSOE":41,"VOX":33,"SUMAR-COMPROMÍS":33,"ALTRES":0}},"03063":{"nom":"Dénia","cens":28072,"votants":19656,"nuls":178,"blancs":127,"valids":19478,"vots":{"PP":6388,"PSOE":7022,"VOX":2409,"SUMAR-COMPROMÍS":3151,"ALTRES":381}},"03064":{"nom":"Dolores","cens":5150,"votants":3955,"nuls":46,"blancs":24,"valids":3909,"vots":{"PP":1693,"PSOE":1068,"VOX":829,"SUMAR-COMPROMÍS":252,"ALTRES":43}},"03065":{"nom":"Elx / Elche","cens":171655,"votants":126819,"nuls":1028,"blancs":1017,"valids":125791,"vots":{"PP":47376,"PSOE":41506,"VOX":20873,"SUMAR-COMPROMÍS":13401,"ALTRES":1618}},"03066":{"nom":"Elda","cens":41186,"votants":29424,"nuls":309,"blancs":246,"valids":29115,"vots":{"PP":9917,"PSOE":10881,"VOX":4400,"SUMAR-COMPROMÍS":3258,"ALTRES":413}},"03067":{"nom":"Facheca","cens":98,"votants":85,"nuls":2,"blancs":0,"valids":83,"vots":{"PP":27,"PSOE":34,"VOX":8,"SUMAR-COMPROMÍS":14,"ALTRES":0}},"03068":{"nom":"Famorca","cens":45,"votants":39,"nuls":0,"blancs":1,"valids":39,"vots":{"PP":25,"PSOE":3,"VOX":6,"SUMAR-COMPROMÍS":4,"ALTRES":0}},"03069":{"nom":"Finestrat","cens":3719,"votants":2544,"nuls":17,"blancs":16,"valids":2527,"vots":{"PP":1078,"PSOE":657,"VOX":447,"SUMAR-COMPROMÍS":301,"ALTRES":28}},"03070":{"nom":"Formentera del Segura","cens":2263,"votants":1606,"nuls":24,"blancs":12,"valids":1582,"vots":{"PP":596,"PSOE":491,"VOX":305,"SUMAR-COMPROMÍS":166,"ALTRES":12}},"03071":{"nom":"Gata de Gorgos","cens":4128,"votants":3026,"nuls":42,"blancs":18,"valids":2984,"vots":{"PP":992,"PSOE":961,"VOX":249,"SUMAR-COMPROMÍS":734,"ALTRES":30}},"03072":{"nom":"Gaianes","cens":410,"votants":332,"nuls":8,"blancs":3,"valids":324,"vots":{"PP":71,"PSOE":110,"VOX":45,"SUMAR-COMPROMÍS":90,"ALTRES":5}},"03073":{"nom":"Gorga","cens":243,"votants":211,"nuls":1,"blancs":2,"valids":210,"vots":{"PP":64,"PSOE":71,"VOX":26,"SUMAR-COMPROMÍS":43,"ALTRES":4}},"03074":{"nom":"Granja de Rocamora","cens":1780,"votants":1390,"nuls":14,"blancs":10,"valids":1376,"vots":{"PP":609,"PSOE":346,"VOX":331,"SUMAR-COMPROMÍS":70,"ALTRES":10}},"03075":{"nom":"Castell de Guadalest, el","cens":173,"votants":143,"nuls":4,"blancs":0,"valids":139,"vots":{"PP":56,"PSOE":28,"VOX":28,"SUMAR-COMPROMÍS":25,"ALTRES":2}},"03076":{"nom":"Guardamar del Segura","cens":9275,"votants":6689,"nuls":105,"blancs":46,"valids":6584,"vots":{"PP":2707,"PSOE":2057,"VOX":973,"SUMAR-COMPROMÍS":735,"ALTRES":66}},"03077":{"nom":"Fondó de les Neus, el / Hondón de las Nieves","cens":1448,"votants":1181,"nuls":20,"blancs":14,"valids":1161,"vots":{"PP":462,"PSOE":329,"VOX":213,"SUMAR-COMPROMÍS":131,"ALTRES":12}},"03078":{"nom":"Hondón de los Frailes","cens":504,"votants":392,"nuls":4,"blancs":2,"valids":388,"vots":{"PP":174,"PSOE":99,"VOX":79,"SUMAR-COMPROMÍS":33,"ALTRES":1}},"03079":{"nom":"Ibi","cens":18501,"votants":14193,"nuls":224,"blancs":135,"valids":13969,"vots":{"PP":4884,"PSOE":4635,"VOX":1945,"SUMAR-COMPROMÍS":2142,"ALTRES":228}},"03080":{"nom":"Jacarilla","cens":1421,"votants":1154,"nuls":13,"blancs":8,"valids":1141,"vots":{"PP":517,"PSOE":260,"VOX":280,"SUMAR-COMPROMÍS":72,"ALTRES":4}},"03081":{"nom":"Xaló","cens":1526,"votants":1152,"nuls":15,"blancs":15,"valids":1137,"vots":{"PP":354,"PSOE":350,"VOX":120,"SUMAR-COMPROMÍS":280,"ALTRES":18}},"03082":{"nom":"Xàbia / Jávea","cens":13261,"votants":8897,"nuls":100,"blancs":44,"valids":8797,"vots":{"PP":3271,"PSOE":2681,"VOX":1340,"SUMAR-COMPROMÍS":1346,"ALTRES":115}},"03083":{"nom":"Xixona / Jijona","cens":5405,"votants":3805,"nuls":33,"blancs":27,"valids":3772,"vots":{"PP":1144,"PSOE":1541,"VOX":390,"SUMAR-COMPROMÍS":621,"ALTRES":49}},"03084":{"nom":"Orxa, l' / Lorcha","cens":478,"votants":407,"nuls":1,"blancs":2,"valids":406,"vots":{"PP":159,"PSOE":130,"VOX":0,"SUMAR-COMPROMÍS":53,"ALTRES":62}},"03085":{"nom":"Llíber","cens":301,"votants":248,"nuls":0,"blancs":3,"valids":248,"vots":{"PP":104,"PSOE":66,"VOX":23,"SUMAR-COMPROMÍS":49,"ALTRES":3}},"03086":{"nom":"Millena","cens":169,"votants":146,"nuls":2,"blancs":0,"valids":144,"vots":{"PP":44,"PSOE":46,"VOX":17,"SUMAR-COMPROMÍS":33,"ALTRES":4}},"03088":{"nom":"Monforte del Cid","cens":6377,"votants":4607,"nuls":59,"blancs":34,"valids":4548,"vots":{"PP":1629,"PSOE":1253,"VOX":1020,"SUMAR-COMPROMÍS":535,"ALTRES":77}},"03089":{"nom":"Monòver / Monóvar","cens":9542,"votants":7008,"nuls":133,"blancs":71,"valids":6875,"vots":{"PP":2332,"PSOE":2569,"VOX":1037,"SUMAR-COMPROMÍS":789,"ALTRES":77}},"03090":{"nom":"Mutxamel","cens":19411,"votants":13965,"nuls":137,"blancs":113,"valids":13828,"vots":{"PP":4971,"PSOE":4146,"VOX":2417,"SUMAR-COMPROMÍS":2000,"ALTRES":181}},"03091":{"nom":"Murla","cens":236,"votants":181,"nuls":2,"blancs":1,"valids":179,"vots":{"PP":91,"PSOE":54,"VOX":9,"SUMAR-COMPROMÍS":22,"ALTRES":2}},"03092":{"nom":"Muro de Alcoy","cens":6807,"votants":5247,"nuls":54,"blancs":48,"valids":5193,"vots":{"PP":1522,"PSOE":1748,"VOX":612,"SUMAR-COMPROMÍS":1197,"ALTRES":66}},"03093":{"nom":"Novelda","cens":19803,"votants":14603,"nuls":159,"blancs":118,"valids":14444,"vots":{"PP":4855,"PSOE":5275,"VOX":2222,"SUMAR-COMPROMÍS":1711,"ALTRES":263}},"03094":{"nom":"Nucia, la","cens":10431,"votants":7236,"nuls":72,"blancs":52,"valids":7164,"vots":{"PP":2875,"PSOE":1956,"VOX":1294,"SUMAR-COMPROMÍS":866,"ALTRES":121}},"03095":{"nom":"Ondara","cens":4929,"votants":3621,"nuls":49,"blancs":21,"valids":3572,"vots":{"PP":1099,"PSOE":1284,"VOX":360,"SUMAR-COMPROMÍS":773,"ALTRES":35}},"03096":{"nom":"Onil","cens":5926,"votants":4531,"nuls":73,"blancs":24,"valids":4458,"vots":{"PP":1522,"PSOE":1501,"VOX":585,"SUMAR-COMPROMÍS":747,"ALTRES":79}},"03097":{"nom":"Orba","cens":1038,"votants":790,"nuls":7,"blancs":4,"valids":783,"vots":{"PP":252,"PSOE":235,"VOX":65,"SUMAR-COMPROMÍS":219,"ALTRES":8}},"03098":{"nom":"Orxeta","cens":593,"votants":480,"nuls":7,"blancs":2,"valids":473,"vots":{"PP":158,"PSOE":187,"VOX":57,"SUMAR-COMPROMÍS":66,"ALTRES":3}},"03099":{"nom":"Orihuela","cens":43826,"votants":31869,"nuls":344,"blancs":200,"valids":31525,"vots":{"PP":13995,"PSOE":8372,"VOX":6119,"SUMAR-COMPROMÍS":2498,"ALTRES":341}},"03100":{"nom":"Parcent","cens":508,"votants":402,"nuls":4,"blancs":2,"valids":398,"vots":{"PP":121,"PSOE":138,"VOX":25,"SUMAR-COMPROMÍS":106,"ALTRES":6}},"03101":{"nom":"Pedreguer","cens":5256,"votants":3820,"nuls":44,"blancs":19,"valids":3776,"vots":{"PP":928,"PSOE":1338,"VOX":362,"SUMAR-COMPROMÍS":1087,"ALTRES":42}},"03102":{"nom":"Pego","cens":7297,"votants":5494,"nuls":59,"blancs":27,"valids":5435,"vots":{"PP":1530,"PSOE":1974,"VOX":585,"SUMAR-COMPROMÍS":1248,"ALTRES":71}},"03103":{"nom":"Penàguila","cens":250,"votants":214,"nuls":3,"blancs":2,"valids":211,"vots":{"PP":72,"PSOE":80,"VOX":16,"SUMAR-COMPROMÍS":41,"ALTRES":0}},"03104":{"nom":"Petrer","cens":27253,"votants":20609,"nuls":255,"blancs":187,"valids":20354,"vots":{"PP":6801,"PSOE":7340,"VOX":2903,"SUMAR-COMPROMÍS":2829,"ALTRES":294}},"03105":{"nom":"Pinós, el / Pinoso","cens":5601,"votants":4124,"nuls":93,"blancs":23,"valids":4031,"vots":{"PP":1659,"PSOE":1176,"VOX":723,"SUMAR-COMPROMÍS":407,"ALTRES":43}},"03106":{"nom":"Planes","cens":556,"votants":479,"nuls":6,"blancs":2,"valids":473,"vots":{"PP":185,"PSOE":187,"VOX":36,"SUMAR-COMPROMÍS":59,"ALTRES":4}},"03107":{"nom":"Polop","cens":3049,"votants":2075,"nuls":20,"blancs":10,"valids":2055,"vots":{"PP":736,"PSOE":613,"VOX":318,"SUMAR-COMPROMÍS":351,"ALTRES":27}},"03109":{"nom":"Rafal","cens":3139,"votants":2373,"nuls":42,"blancs":12,"valids":2331,"vots":{"PP":844,"PSOE":889,"VOX":434,"SUMAR-COMPROMÍS":135,"ALTRES":17}},"03110":{"nom":"Ràfol d'Almúnia, el","cens":350,"votants":290,"nuls":3,"blancs":2,"valids":287,"vots":{"PP":78,"PSOE":70,"VOX":39,"SUMAR-COMPROMÍS":92,"ALTRES":6}},"03111":{"nom":"Redován","cens":5746,"votants":4242,"nuls":40,"blancs":23,"valids":4202,"vots":{"PP":1677,"PSOE":1280,"VOX":862,"SUMAR-COMPROMÍS":309,"ALTRES":51}},"03112":{"nom":"Relleu","cens":725,"votants":588,"nuls":6,"blancs":2,"valids":582,"vots":{"PP":269,"PSOE":170,"VOX":71,"SUMAR-COMPROMÍS":65,"ALTRES":5}},"03113":{"nom":"Rojales","cens":4434,"votants":3098,"nuls":29,"blancs":18,"valids":3069,"vots":{"PP":1041,"PSOE":1074,"VOX":625,"SUMAR-COMPROMÍS":276,"ALTRES":35}},"03114":{"nom":"Romana, la","cens":1647,"votants":1285,"nuls":18,"blancs":8,"valids":1267,"vots":{"PP":469,"PSOE":425,"VOX":224,"SUMAR-COMPROMÍS":129,"ALTRES":12}},"03115":{"nom":"Sagra","cens":250,"votants":207,"nuls":3,"blancs":0,"valids":204,"vots":{"PP":77,"PSOE":65,"VOX":21,"SUMAR-COMPROMÍS":37,"ALTRES":4}},"03116":{"nom":"Salinas","cens":1194,"votants":865,"nuls":10,"blancs":4,"valids":855,"vots":{"PP":329,"PSOE":235,"VOX":164,"SUMAR-COMPROMÍS":114,"ALTRES":9}},"03117":{"nom":"Sanet y Negrals","cens":414,"votants":345,"nuls":1,"blancs":1,"valids":344,"vots":{"PP":110,"PSOE":103,"VOX":55,"SUMAR-COMPROMÍS":69,"ALTRES":6}},"03118":{"nom":"San Fulgencio","cens":2641,"votants":1757,"nuls":17,"blancs":13,"valids":1740,"vots":{"PP":688,"PSOE":479,"VOX":372,"SUMAR-COMPROMÍS":160,"ALTRES":28}},"03119":{"nom":"Sant Joan d'Alacant","cens":17992,"votants":13178,"nuls":114,"blancs":97,"valids":13064,"vots":{"PP":5018,"PSOE":4001,"VOX":1894,"SUMAR-COMPROMÍS":1866,"ALTRES":188}},"03120":{"nom":"San Miguel de Salinas","cens":2534,"votants":1840,"nuls":35,"blancs":5,"valids":1805,"vots":{"PP":722,"PSOE":560,"VOX":307,"SUMAR-COMPROMÍS":188,"ALTRES":23}},"03121":{"nom":"Santa Pola","cens":23962,"votants":16181,"nuls":151,"blancs":116,"valids":16030,"vots":{"PP":6028,"PSOE":4681,"VOX":3084,"SUMAR-COMPROMÍS":1870,"ALTRES":251}},"03122":{"nom":"Sant Vicent del Raspeig / San Vicente del Raspeig","cens":45193,"votants":31462,"nuls":305,"blancs":249,"valids":31157,"vots":{"PP":9876,"PSOE":10430,"VOX":5565,"SUMAR-COMPROMÍS":4497,"ALTRES":540}},"03123":{"nom":"Sax","cens":7707,"votants":5803,"nuls":66,"blancs":33,"valids":5737,"vots":{"PP":2168,"PSOE":1977,"VOX":889,"SUMAR-COMPROMÍS":611,"ALTRES":59}},"03124":{"nom":"Sella","cens":483,"votants":390,"nuls":2,"blancs":2,"valids":388,"vots":{"PP":111,"PSOE":118,"VOX":31,"SUMAR-COMPROMÍS":124,"ALTRES":2}},"03125":{"nom":"Senija","cens":359,"votants":261,"nuls":1,"blancs":2,"valids":260,"vots":{"PP":81,"PSOE":80,"VOX":40,"SUMAR-COMPROMÍS":55,"ALTRES":2}},"03127":{"nom":"Tàrbena","cens":352,"votants":272,"nuls":5,"blancs":1,"valids":267,"vots":{"PP":97,"PSOE":104,"VOX":26,"SUMAR-COMPROMÍS":37,"ALTRES":2}},"03128":{"nom":"Teulada","cens":4519,"votants":2950,"nuls":40,"blancs":15,"valids":2910,"vots":{"PP":1129,"PSOE":723,"VOX":491,"SUMAR-COMPROMÍS":504,"ALTRES":48}},"03129":{"nom":"Tibi","cens":1386,"votants":1066,"nuls":13,"blancs":10,"valids":1053,"vots":{"PP":410,"PSOE":282,"VOX":185,"SUMAR-COMPROMÍS":157,"ALTRES":9}},"03130":{"nom":"Tollos","cens":36,"votants":32,"nuls":0,"blancs":0,"valids":32,"vots":{"PP":17,"PSOE":4,"VOX":7,"SUMAR-COMPROMÍS":4,"ALTRES":0}},"03131":{"nom":"Tormos","cens":170,"votants":136,"nuls":1,"blancs":0,"valids":135,"vots":{"PP":54,"PSOE":34,"VOX":20,"SUMAR-COMPROMÍS":23,"ALTRES":4}},"03132":{"nom":"Torre de les Maçanes, la / Torremanzanas","cens":543,"votants":424,"nuls":4,"blancs":2,"valids":420,"vots":{"PP":123,"PSOE":150,"VOX":48,"SUMAR-COMPROMÍS":87,"ALTRES":10}},"03133":{"nom":"Torrevieja","cens":41398,"votants":24955,"nuls":209,"blancs":150,"valids":24746,"vots":{"PP":9429,"PSOE":7736,"VOX":4700,"SUMAR-COMPROMÍS":2403,"ALTRES":328}},"03134":{"nom":"Vall d'Alcalà, la","cens":144,"votants":122,"nuls":1,"blancs":0,"valids":121,"vots":{"PP":31,"PSOE":55,"VOX":12,"SUMAR-COMPROMÍS":21,"ALTRES":2}},"03135":{"nom":"Vall d'Ebo, la","cens":189,"votants":151,"nuls":1,"blancs":0,"valids":150,"vots":{"PP":27,"PSOE":64,"VOX":7,"SUMAR-COMPROMÍS":46,"ALTRES":6}},"03136":{"nom":"Vall de Gallinera, la","cens":411,"votants":338,"nuls":2,"blancs":2,"valids":336,"vots":{"PP":97,"PSOE":92,"VOX":27,"SUMAR-COMPROMÍS":117,"ALTRES":1}},"03137":{"nom":"Vall de Laguar, la","cens":657,"votants":462,"nuls":6,"blancs":3,"valids":456,"vots":{"PP":127,"PSOE":169,"VOX":25,"SUMAR-COMPROMÍS":129,"ALTRES":3}},"03138":{"nom":"Verger, el","cens":3362,"votants":2435,"nuls":34,"blancs":14,"valids":2401,"vots":{"PP":774,"PSOE":691,"VOX":458,"SUMAR-COMPROMÍS":439,"ALTRES":25}},"03139":{"nom":"Vila Joiosa, la / Villajoyosa","cens":23585,"votants":15774,"nuls":158,"blancs":121,"valids":15616,"vots":{"PP":5406,"PSOE":5378,"VOX":2218,"SUMAR-COMPROMÍS":2237,"ALTRES":256}},"03140":{"nom":"Villena","cens":25906,"votants":18917,"nuls":300,"blancs":183,"valids":18617,"vots":{"PP":6675,"PSOE":6047,"VOX":2636,"SUMAR-COMPROMÍS":2678,"ALTRES":398}},"03901":{"nom":"Poblets, els","cens":1199,"votants":828,"nuls":6,"blancs":5,"valids":822,"vots":{"PP":243,"PSOE":225,"VOX":132,"SUMAR-COMPROMÍS":201,"ALTRES":16}},"03902":{"nom":"Pilar de la Horadada","cens":11348,"votants":7844,"nuls":88,"blancs":55,"valids":7756,"vots":{"PP":3505,"PSOE":1584,"VOX":1967,"SUMAR-COMPROMÍS":552,"ALTRES":93}},"03903":{"nom":"Montesinos, los","cens":2724,"votants":2008,"nuls":23,"blancs":19,"valids":1985,"vots":{"PP":729,"PSOE":614,"VOX":439,"SUMAR-COMPROMÍS":157,"ALTRES":27}},"03904":{"nom":"San Isidro","cens":1515,"votants":1129,"nuls":15,"blancs":5,"valids":1114,"vots":{"PP":354,"PSOE":424,"VOX":215,"SUMAR-COMPROMÍS":101,"ALTRES":15}}},"alcoi":{"nom":"Alcoi / Alcoy","cens":45849,"votants":34051,"nuls":351,"blancs":269,"valids":33700,"vots":{"PP":9501,"PSOE":13116,"VOX":4319,"SUMAR-COMPROMÍS":5993,"ALTRES":502}},"seccions_alcoi":{"0300901001":{"cens":980,"votants":625,"nuls":10,"blancs":7,"valids":615,"vots":{"PP":240,"PSOE":187,"VOX":66,"SUMAR-COMPROMÍS":107,"ALTRES":8},"meses":2},"0300901003":{"cens":954,"votants":670,"nuls":6,"blancs":3,"valids":664,"vots":{"PP":279,"PSOE":157,"VOX":106,"SUMAR-COMPROMÍS":106,"ALTRES":13},"meses":2},"0300901004":{"cens":684,"votants":560,"nuls":7,"blancs":5,"valids":553,"vots":{"PP":289,"PSOE":134,"VOX":68,"SUMAR-COMPROMÍS":51,"ALTRES":6},"meses":1},"0300901006":{"cens":847,"votants":562,"nuls":5,"blancs":1,"valids":557,"vots":{"PP":127,"PSOE":187,"VOX":88,"SUMAR-COMPROMÍS":143,"ALTRES":11},"meses":2},"0300902001":{"cens":678,"votants":503,"nuls":5,"blancs":1,"valids":498,"vots":{"PP":120,"PSOE":190,"VOX":70,"SUMAR-COMPROMÍS":105,"ALTRES":12},"meses":1},"0300902002":{"cens":1600,"votants":1197,"nuls":6,"blancs":14,"valids":1191,"vots":{"PP":258,"PSOE":464,"VOX":176,"SUMAR-COMPROMÍS":258,"ALTRES":21},"meses":3},"0300902003":{"cens":846,"votants":648,"nuls":5,"blancs":8,"valids":643,"vots":{"PP":214,"PSOE":209,"VOX":52,"SUMAR-COMPROMÍS":150,"ALTRES":10},"meses":2},"0300902004":{"cens":811,"votants":592,"nuls":2,"blancs":5,"valids":590,"vots":{"PP":116,"PSOE":242,"VOX":61,"SUMAR-COMPROMÍS":156,"ALTRES":10},"meses":2},"0300902005":{"cens":599,"votants":436,"nuls":6,"blancs":5,"valids":430,"vots":{"PP":160,"PSOE":134,"VOX":48,"SUMAR-COMPROMÍS":81,"ALTRES":2},"meses":1},"0300902007":{"cens":1120,"votants":826,"nuls":13,"blancs":2,"valids":813,"vots":{"PP":191,"PSOE":343,"VOX":111,"SUMAR-COMPROMÍS":154,"ALTRES":12},"meses":2},"0300903001":{"cens":871,"votants":662,"nuls":6,"blancs":5,"valids":656,"vots":{"PP":148,"PSOE":297,"VOX":80,"SUMAR-COMPROMÍS":118,"ALTRES":8},"meses":2},"0300903002":{"cens":1134,"votants":876,"nuls":14,"blancs":8,"valids":862,"vots":{"PP":218,"PSOE":377,"VOX":97,"SUMAR-COMPROMÍS":151,"ALTRES":11},"meses":2},"0300903003":{"cens":1207,"votants":818,"nuls":8,"blancs":5,"valids":810,"vots":{"PP":183,"PSOE":383,"VOX":66,"SUMAR-COMPROMÍS":159,"ALTRES":14},"meses":2},"0300903004":{"cens":1253,"votants":955,"nuls":6,"blancs":4,"valids":949,"vots":{"PP":281,"PSOE":351,"VOX":118,"SUMAR-COMPROMÍS":183,"ALTRES":12},"meses":2},"0300903005":{"cens":820,"votants":579,"nuls":9,"blancs":4,"valids":570,"vots":{"PP":129,"PSOE":234,"VOX":87,"SUMAR-COMPROMÍS":104,"ALTRES":12},"meses":2},"0300903006":{"cens":613,"votants":435,"nuls":11,"blancs":3,"valids":424,"vots":{"PP":75,"PSOE":200,"VOX":53,"SUMAR-COMPROMÍS":83,"ALTRES":10},"meses":1},"0300904001":{"cens":646,"votants":509,"nuls":4,"blancs":4,"valids":505,"vots":{"PP":190,"PSOE":168,"VOX":76,"SUMAR-COMPROMÍS":63,"ALTRES":4},"meses":1},"0300904002":{"cens":1346,"votants":1067,"nuls":10,"blancs":7,"valids":1057,"vots":{"PP":377,"PSOE":401,"VOX":128,"SUMAR-COMPROMÍS":136,"ALTRES":8},"meses":3},"0300904003":{"cens":776,"votants":579,"nuls":1,"blancs":3,"valids":578,"vots":{"PP":151,"PSOE":250,"VOX":77,"SUMAR-COMPROMÍS":91,"ALTRES":6},"meses":2},"0300904004":{"cens":924,"votants":692,"nuls":13,"blancs":4,"valids":679,"vots":{"PP":157,"PSOE":323,"VOX":68,"SUMAR-COMPROMÍS":118,"ALTRES":9},"meses":2},"0300904005":{"cens":542,"votants":375,"nuls":4,"blancs":0,"valids":371,"vots":{"PP":113,"PSOE":144,"VOX":50,"SUMAR-COMPROMÍS":57,"ALTRES":7},"meses":1},"0300904006":{"cens":742,"votants":481,"nuls":3,"blancs":2,"valids":478,"vots":{"PP":95,"PSOE":214,"VOX":61,"SUMAR-COMPROMÍS":97,"ALTRES":9},"meses":2},"0300904007":{"cens":613,"votants":424,"nuls":9,"blancs":3,"valids":415,"vots":{"PP":91,"PSOE":178,"VOX":57,"SUMAR-COMPROMÍS":74,"ALTRES":12},"meses":1},"0300904008":{"cens":1135,"votants":814,"nuls":6,"blancs":2,"valids":808,"vots":{"PP":303,"PSOE":269,"VOX":88,"SUMAR-COMPROMÍS":130,"ALTRES":16},"meses":2},"0300905001":{"cens":1006,"votants":781,"nuls":5,"blancs":6,"valids":776,"vots":{"PP":319,"PSOE":258,"VOX":101,"SUMAR-COMPROMÍS":79,"ALTRES":13},"meses":2},"0300905002":{"cens":840,"votants":627,"nuls":7,"blancs":5,"valids":620,"vots":{"PP":221,"PSOE":227,"VOX":71,"SUMAR-COMPROMÍS":85,"ALTRES":11},"meses":1},"0300905003":{"cens":1195,"votants":901,"nuls":5,"blancs":4,"valids":896,"vots":{"PP":245,"PSOE":335,"VOX":114,"SUMAR-COMPROMÍS":185,"ALTRES":13},"meses":2},"0300905004":{"cens":800,"votants":567,"nuls":7,"blancs":4,"valids":560,"vots":{"PP":125,"PSOE":250,"VOX":75,"SUMAR-COMPROMÍS":101,"ALTRES":5},"meses":2},"0300905005":{"cens":798,"votants":576,"nuls":5,"blancs":6,"valids":571,"vots":{"PP":120,"PSOE":256,"VOX":80,"SUMAR-COMPROMÍS":104,"ALTRES":5},"meses":2},"0300905006":{"cens":1071,"votants":890,"nuls":12,"blancs":7,"valids":878,"vots":{"PP":281,"PSOE":300,"VOX":117,"SUMAR-COMPROMÍS":160,"ALTRES":13},"meses":2},"0300906001":{"cens":1105,"votants":881,"nuls":7,"blancs":13,"valids":874,"vots":{"PP":346,"PSOE":260,"VOX":121,"SUMAR-COMPROMÍS":124,"ALTRES":10},"meses":2},"0300906002":{"cens":768,"votants":573,"nuls":7,"blancs":8,"valids":566,"vots":{"PP":140,"PSOE":206,"VOX":85,"SUMAR-COMPROMÍS":122,"ALTRES":5},"meses":1},"0300906003":{"cens":857,"votants":689,"nuls":7,"blancs":8,"valids":682,"vots":{"PP":270,"PSOE":203,"VOX":81,"SUMAR-COMPROMÍS":109,"ALTRES":11},"meses":2},"0300906004":{"cens":893,"votants":695,"nuls":7,"blancs":5,"valids":688,"vots":{"PP":226,"PSOE":258,"VOX":99,"SUMAR-COMPROMÍS":89,"ALTRES":11},"meses":2},"0300906005":{"cens":633,"votants":507,"nuls":3,"blancs":4,"valids":504,"vots":{"PP":233,"PSOE":131,"VOX":54,"SUMAR-COMPROMÍS":78,"ALTRES":4},"meses":1},"0300907001":{"cens":971,"votants":757,"nuls":13,"blancs":12,"valids":744,"vots":{"PP":236,"PSOE":279,"VOX":89,"SUMAR-COMPROMÍS":120,"ALTRES":8},"meses":2},"0300907002":{"cens":1539,"votants":1126,"nuls":9,"blancs":13,"valids":1117,"vots":{"PP":296,"PSOE":466,"VOX":134,"SUMAR-COMPROMÍS":190,"ALTRES":18},"meses":3},"0300907003":{"cens":885,"votants":650,"nuls":6,"blancs":3,"valids":644,"vots":{"PP":111,"PSOE":312,"VOX":80,"SUMAR-COMPROMÍS":123,"ALTRES":15},"meses":2},"0300907005":{"cens":1173,"votants":761,"nuls":14,"blancs":6,"valids":747,"vots":{"PP":129,"PSOE":422,"VOX":86,"SUMAR-COMPROMÍS":95,"ALTRES":9},"meses":2},"0300907007":{"cens":749,"votants":572,"nuls":5,"blancs":3,"valids":567,"vots":{"PP":106,"PSOE":276,"VOX":59,"SUMAR-COMPROMÍS":118,"ALTRES":5},"meses":2},"0300907008":{"cens":693,"votants":496,"nuls":4,"blancs":2,"valids":492,"vots":{"PP":75,"PSOE":227,"VOX":69,"SUMAR-COMPROMÍS":102,"ALTRES":17},"meses":1},"0300908001":{"cens":1579,"votants":1169,"nuls":11,"blancs":10,"valids":1158,"vots":{"PP":273,"PSOE":479,"VOX":135,"SUMAR-COMPROMÍS":244,"ALTRES":17},"meses":3},"0300908002":{"cens":1072,"votants":816,"nuls":10,"blancs":11,"valids":806,"vots":{"PP":228,"PSOE":284,"VOX":134,"SUMAR-COMPROMÍS":136,"ALTRES":13},"meses":2},"0300908003":{"cens":1499,"votants":1134,"nuls":6,"blancs":6,"valids":1128,"vots":{"PP":393,"PSOE":294,"VOX":197,"SUMAR-COMPROMÍS":218,"ALTRES":20},"meses":2},"0300908004":{"cens":603,"votants":454,"nuls":2,"blancs":4,"valids":452,"vots":{"PP":111,"PSOE":180,"VOX":57,"SUMAR-COMPROMÍS":97,"ALTRES":3},"meses":1},"0300908005":{"cens":1036,"votants":759,"nuls":8,"blancs":10,"valids":751,"vots":{"PP":137,"PSOE":377,"VOX":93,"SUMAR-COMPROMÍS":124,"ALTRES":10},"meses":2},"0300908006":{"cens":1061,"votants":775,"nuls":8,"blancs":5,"valids":767,"vots":{"PP":134,"PSOE":367,"VOX":94,"SUMAR-COMPROMÍS":152,"ALTRES":15},"meses":2},"0300908007":{"cens":1282,"votants":1010,"nuls":14,"blancs":9,"valids":996,"vots":{"PP":241,"PSOE":433,"VOX":142,"SUMAR-COMPROMÍS":163,"ALTRES":8},"meses":2}}};
+amIniciar(DADES, (D, directe) => {
+  /* Noms amb article i contraccions (normativa AVL) i color del text: es definixen en PARTITS (common.js o dades en directe) */
+  const pn = (k, forma = 'el') => `<strong style="color:${P[k].text || P[k].color}">${P[k].art[forma]}</strong>`;
+  const ORD = ['primera', 'segona', 'tercera', 'quarta'];
+  const escTxt = n => n === 1 ? '1 escó' : `${n} escons`;
+  const pp = (u, k) => fmtP(pct(u.vots[k], u));
+  const rank = u => PRINCIPALS().sort((a, b) => u.vots[b] - u.vots[a]);
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  function difPunts(u, a, b) { const d = pct(u.vots[a], u) - pct(u.vots[b], u); return new Intl.NumberFormat('ca-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(d) + (Math.abs(d - 1) < 0.05 ? ' punt' : ' punts'); }
+  function escrutini() {
+    const e = D.escrutat;
+    return (e != null && e < 100) ? `Amb el ${fmtP(e)} escrutat, ` : '';
+  }
+  function bloc(seccio) {
+    if (seccio === 'cv') {
+      const u = D.cv, r = rank(u);
+      const amb = r.filter(k => u.escons[k] > 0);
+      const sense = r.filter(k => u.escons[k] === 0);
+      let t = `<p>${escrutini()}${escrutini() ? pn(r[0]) : pn(r[0], 'El')} ${escrutini() ? 'és' : 'va ser'} la força més votada en la Comunitat Valenciana en les eleccions al Congrés, amb el <strong>${pp(u, r[0])}</strong> dels vots vàlids i <strong>${escTxt(u.escons[r[0]])}</strong> dels ${u.total_escons} que reparteixen les tres províncies. `;
+      t += `${pn(r[1], 'El')} ${escrutini() ? 'és' : 'va ser'} la segona força, amb el ${pp(u, r[1])} i ${escTxt(u.escons[r[1]])}, ${difPunts(u, r[0], r[1])} per darrere.</p>`;
+      t += `<p>${pn(r[2], 'El')} ${escrutini() ? 'obté' : 'va obtindre'} el ${pp(u, r[2])} dels vots i ${escTxt(u.escons[r[2]])}, i ${pn(r[3])}, el ${pp(u, r[3])} i ${escTxt(u.escons[r[3]])}.`;
+      if (sense.length) t += ` ${sense.map(k => pn(k, 'El')).join(' i ')} no ${sense.length > 1 ? 'obtenen' : 'obté'} representació.`;
+      t += escrutini() ? ` En les meses escrutades, la participació és del <strong>${fmtP(participacio(u))}</strong>.</p>` : ` La participació va ser del <strong>${fmtP(participacio(u))}</strong>: van votar ${fmtN(u.votants)} de les ${fmtN(u.cens)} persones cridades a les urnes.</p>`;
+      return t;
+    }
+    if (seccio === 'provincies') {
+      const u = D.provincies['03'], r = rank(u);
+      const muns = Object.values(D.municipis_alacant).filter(teDades);
+      const totalMuns = D.total_municipis_alacant || muns.length;
+      const guany = {}; muns.forEach(m => { const g = rank(m)[0]; guany[g] = (guany[g] || 0) + 1; });
+      const ordG = Object.keys(guany).sort((a, b) => guany[b] - guany[a]);
+      let t = `<p>En la província d'Alacant, que elegeix ${u.total_escons} diputats, ${pn(r[0])} ${escrutini() ? 'és' : 'va ser'} la llista més votada, amb el <strong>${pp(u, r[0])}</strong> i ${escTxt(u.escons[r[0]])}. `;
+      const llista = r.slice(1).map(k => `${pn(k)} (${pp(u, k)}, ${escTxt(u.escons[k])})`);
+      t += `Completen el repartiment ${llista.slice(0, -1).join(', ')} i ${llista[llista.length - 1]}. ${escrutini() ? 'En les meses escrutades, la participació és' : 'La participació va ser'} del ${fmtP(participacio(u))}.</p>`;
+      t += `<p>Per municipis, ${pn(ordG[0])} ${escrutini() ? 'és' : 'va ser'} la força més votada en ${guany[ordG[0]]} dels ${muns.length} municipis ${muns.length < totalMuns ? `amb dades (de ${totalMuns})` : 'de la província'}`;
+      if (ordG[1]) t += `; ${pn(ordG[1])}, en ${guany[ordG[1]]}`;
+      if (ordG[2]) t += `, i ${pn(ordG[2])}, en ${guany[ordG[2]]}`;
+      t += `.</p>`;
+      const vl = D.provincies['46'], cs = D.provincies['12'];
+      t += `<p>En la província de València (${vl.total_escons} escons), ${pn(rank(vl)[0])} ${escrutini() ? 'és' : 'va ser'} primera força amb el ${pp(vl, rank(vl)[0])}, i en la de Castelló (${cs.total_escons} escons), ${pn(rank(cs)[0])}, amb el ${pp(cs, rank(cs)[0])}.</p>`;
+      return t;
+    }
+    if (seccio === 'comarques') {
+      const noms = ["L'Alcoià", 'El Comtat', 'La Foia de Castalla'];
+      const dins = { "L'Alcoià": "en l'Alcoià", 'El Comtat': 'en el Comtat', 'La Foia de Castalla': 'en la Foia de Castalla' };
+      let t = '<p>';
+      noms.forEach((c, i) => {
+        const u = D.comarques[c], r = rank(u);
+        t += `${i === 0 ? cap(dins[c]) : (i === noms.length - 1 ? 'Finalment, ' + dins[c] : cap(dins[c]))}, ${pn(r[0])} ${escrutini() ? 'és' : 'va ser'} la força més votada, amb el <strong>${pp(u, r[0])}</strong>, ${difPunts(u, r[0], r[1])} per davant ${pn(r[1], 'del')}. `;
+        t += `Darrere ${i === 0 ? 'se situen' : 'queden'} ${pn(r[2])} (${pp(u, r[2])}) i ${pn(r[3])} (${pp(u, r[3])}). ${escrutini() ? 'En les meses escrutades, la participació és' : 'La participació va ser'} del ${fmtP(participacio(u))}. `;
+        if (i < noms.length - 1) t += '</p><p>';
+      });
+      t += '</p>';
+      return t;
+    }
+    if (seccio === 'alcoi') {
+      const u = D.alcoi; if (!teDades(u)) return '<p>Encara no hi ha dades d\'Alcoi.</p>';
+      const r = rank(u);
+      const seccs = Object.values(D.seccions_alcoi || {}).filter(teDades);
+      let t = `<p>A Alcoi, ${pn(r[0])} ${escrutini() ? 'és' : 'va ser'} la candidatura més votada, amb el <strong>${pp(u, r[0])}</strong> dels vots vàlids, seguida ${pn(r[1], 'del')} (${pp(u, r[1])}), ${pn(r[2])} (${pp(u, r[2])}) i ${pn(r[3])} (${pp(u, r[3])}). ${escrutini() ? `En les meses escrutades, la participació és del ${fmtP(participacio(u))}.` : `Van votar ${fmtN(u.votants)} persones, el ${fmtP(participacio(u))} del cens.`}</p>`;
+      if (seccs.length) {
+        const g = {}; seccs.forEach(s => { const k = rank(s)[0]; g[k] = (g[k] || 0) + 1; });
+        const ordG = Object.keys(g).sort((a, b) => g[b] - g[a]);
+        t += `<p>Per seccions censals, ${pn(ordG[0])} ${escrutini() ? 'guanya' : 'va guanyar'} en ${g[ordG[0]]} de les ${seccs.length} seccions de la ciutat`;
+        if (ordG[1]) t += ` i ${pn(ordG[1])}, en ${g[ordG[1]]}`;
+        if (ordG[2]) t += `; ${pn(ordG[2])}, en ${g[ordG[2]]}`;
+        t += `. En el mapa següent es pot buscar qualsevol carrer per a saber en quina secció es vota i quin va ser el resultat.</p>`;
+      } else if (D.nota_seccions) t += `<p>${D.nota_seccions}</p>`;
+      return t;
+    }
+    if (seccio === 'intro') {
+      return directe
+        ? `<p>La Comunitat Valenciana elegeix 33 dels 350 diputats del Congrés: 12 en la província d'Alacant, 16 en la de València i 5 en la de Castelló. Estos són els resultats provisionals de les eleccions generals del ${D.data_text} en la Comunitat, en les províncies, en les comarques de l'Alcoià, el Comtat i la Foia de Castalla i a Alcoi, a mesura que avança l'escrutini.</p>`
+        : `<p>La Comunitat Valenciana elegeix 33 dels 350 diputats del Congrés: 12 en la província d'Alacant, 16 en la de València i 5 en la de Castelló. Estos són els resultats de les eleccions generals del 23 de juliol de 2023 en la Comunitat, en les províncies, en les comarques de l'Alcoià, el Comtat i la Foia de Castalla i a Alcoi, secció a secció.</p>`;
+    }
+    if (seccio === 'font') {
+      return directe
+        ? `<p>Font: Ministeri de l'Interior, escrutini provisional (el resultat oficial el fixa l'escrutini general). Escons calculats amb el sistema D'Hondt a partir de l'escrutini provisional. Els resultats per seccions censals d'Alcoi són del 23 de juliol de 2023. Seccions censals i carrerer: <a href="https://www.ine.es/dyngs/DAB/es/index.htm?cid=1390" target="_top">Institut Nacional d'Estadística</a>.</p>`
+        : `<p>Font: <a href="https://dadesobertes.gva.es/va/dataset/pre-result-elec-general-2023" target="_top">Generalitat Valenciana, Resultats d'eleccions generals 2023</a>, a partir de dades del Ministeri de l'Interior. Seccions censals i carrerer: <a href="https://www.ine.es/dyngs/DAB/es/index.htm?cid=1390" target="_top">Institut Nacional d'Estadística</a>.</p>`;
+    }
+    return '';
+  }
+  const sec = new URLSearchParams(location.search).get('seccio');
+  const totes = ['cv', 'provincies', 'comarques', 'alcoi'];
+  document.getElementById('text').innerHTML = (sec && (totes.includes(sec) || sec === 'intro' || sec === 'font') ? [sec] : totes).map(bloc).join('');
+});
+</script>
+
+</body>
+</html>
