@@ -19,6 +19,8 @@ body{margin:0;font-family:Ubuntu,sans-serif;font-size:.85em;color:#333}
 </head>
 <body>
 <div class="editor_content">
+<iframe src="eg26-0-text.html?seccio=escrutini" title="Text dels resultats" width="100%" height="10" frameborder="0" scrolling="no" loading="lazy"></iframe>
+
 <iframe src="eg26-0-text.html?seccio=intro" title="Text dels resultats" width="100%" height="90" frameborder="0" scrolling="no" loading="lazy"></iframe>
 
 <h2>Comunitat Valenciana</h2>
@@ -27,23 +29,17 @@ body{margin:0;font-family:Ubuntu,sans-serif;font-size:.85em;color:#333}
 
 <iframe src="eg26-1-comunitat.html" title="Gr&#224;fic: resultats al Congr&#233;s en la Comunitat Valenciana" width="100%" height="1300" frameborder="0" scrolling="no" loading="lazy"></iframe>
 
-<h2>Prov&#237;ncies</h2>
-
-<iframe src="eg26-0-text.html?seccio=provincies" title="Text dels resultats" width="100%" height="320" frameborder="0" scrolling="no" loading="lazy"></iframe>
-
-<iframe src="eg26-2-provincies.html" title="Mapa: resultats per prov&#237;ncies i municipis" width="100%" height="1500" frameborder="0" scrolling="no" loading="lazy"></iframe>
-
 <h2>L'Alcoi&#224;, el Comtat i la Foia de Castalla</h2>
 
 <iframe src="eg26-0-text.html?seccio=comarques" title="Text dels resultats" width="100%" height="320" frameborder="0" scrolling="no" loading="lazy"></iframe>
 
 <iframe src="eg26-3-comarques.html" title="Mapa: resultats a l'Alcoi&#224;, el Comtat i la Foia de Castalla" width="100%" height="1400" frameborder="0" scrolling="no" loading="lazy"></iframe>
 
-<h2>Alcoi, secci&#243; a secci&#243;</h2>
+<h2>Prov&#237;ncies, municipi a municipi</h2>
 
-<iframe src="eg26-0-text.html?seccio=alcoi" title="Text dels resultats" width="100%" height="320" frameborder="0" scrolling="no" loading="lazy"></iframe>
+<iframe src="eg26-0-text.html?seccio=provincies" title="Text dels resultats" width="100%" height="320" frameborder="0" scrolling="no" loading="lazy"></iframe>
 
-<iframe src="eg26-4-municipis.html" title="Mapa: resultats per seccions censals i cercador de carrers" width="100%" height="1500" frameborder="0" scrolling="no" loading="lazy"></iframe>
+<iframe src="eg26-2-provincies.html" title="Mapa: resultats per prov&#237;ncies i municipis" width="100%" height="1500" frameborder="0" scrolling="no" loading="lazy"></iframe>
 
 <iframe src="eg26-0-text.html?seccio=font" title="Text dels resultats" width="100%" height="60" frameborder="0" scrolling="no" loading="lazy"></iframe>
 
@@ -54,7 +50,6 @@ window.addEventListener('message', function (e) {
     if (f.contentWindow === e.source) f.setAttribute('height', e.data.altura);
   });
 });
-/* Si este bloc es mostra dins d'un iframe, comunica la seua altura a la pagina exterior */
 if (window.self !== window.top) {
   document.documentElement.style.overflow = 'hidden';
   var amAltura = function () {
@@ -65,7 +60,6 @@ if (window.self !== window.top) {
   setInterval(amAltura, 1500);
 }
 </script>
-
 </div>
 </body>
 </html>
