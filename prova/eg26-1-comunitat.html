@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ca-valencia">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resultats al Congrés en la Comunitat Valenciana · ARAmultimèdia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>:root{--fons:#ffffff;--text:#000000;--blau:#00b1ea;--gris:#555555;--gris-clar:#e6e6e6;--linia:#d0d0d0}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--fons);color:var(--text);font-family:Ubuntu,sans-serif;font-size:16px;line-height:1.45}
+.am-viz{max-width:980px;margin:0 auto;padding:16px 12px 12px}
+.am-viz h2{font-size:1.35rem;line-height:1.2;margin:0 0 4px}
+.am-viz .entradeta{margin:0 0 14px;color:var(--gris);font-size:.95rem}
+.am-viz h3{font-size:1.05rem;margin:18px 0 8px}
+.kpis{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 14px}
+.kpi{border-top:3px solid var(--blau);padding:6px 10px 4px 0;min-width:120px}
+.kpi b{display:block;font-size:1.5rem;line-height:1.1}
+.kpi span{font-size:.8rem;color:var(--gris)}
+.pestanyes{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}
+.pestanyes button,.btn{font:inherit;font-size:.9rem;border:1px solid var(--text);background:#fff;color:var(--text);padding:6px 12px;border-radius:4px;cursor:pointer}
+.pestanyes button[aria-selected="true"],.btn.actiu{background:var(--blau);border-color:var(--blau);color:#000;font-weight:700}
+.pestanyes button:focus-visible,.btn:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--blau);outline-offset:2px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:6px 0 10px;font-size:.9rem}
+.controls label{display:flex;gap:6px;align-items:center}
+select,input[type=search],input[type=text],input[type=number]{font:inherit;font-size:.95rem;padding:6px 8px;border:1px solid #888;border-radius:4px;background:#fff;color:#000}
+.graella{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+@media (max-width:720px){.graella{grid-template-columns:1fr}}
+.barres{width:100%}
+.barra-fila{display:grid;grid-template-columns:136px 1fr 92px;align-items:center;gap:8px;margin:0 0 7px;font-size:.9rem}
+.barra-fila .nom{font-weight:700;line-height:1.15}
+.barra-fila .pista{position:relative;height:18px;background:#f3f3f3;border-radius:0 4px 4px 0}
+.barra-fila .omplit{position:absolute;left:0;top:0;bottom:0;border-radius:0 4px 4px 0}
+.barra-fila .val{text-align:right;font-variant-numeric:tabular-nums}
+.barra-fila .val small{display:block;color:var(--gris);font-size:.75rem}
+.punt{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.llegenda{display:flex;flex-wrap:wrap;gap:12px;font-size:.85rem;margin:6px 0}
+.llegenda span{display:inline-flex;align-items:center}
+.mapa-wrap{position:relative;width:100%}
+.mapa-wrap svg{width:100%;height:auto;display:block}
+.mapa-wrap path.unitat{stroke:#fff;stroke-width:.6;cursor:pointer;vector-effect:non-scaling-stroke}
+.mapa-wrap svg{touch-action:pan-y}
+.zoom-btns{display:flex;gap:4px;justify-content:flex-end;margin-bottom:4px}
+.zoom-btns .btn{padding:2px 9px;font-size:.85rem;background:rgba(255,255,255,.92)}
+.mapa-wrap path.unitat:hover,.mapa-wrap path.unitat.marcat{stroke:#000;stroke-width:2}
+.mapa-wrap path.contorn{fill:none;stroke:#000;stroke-width:1.2;pointer-events:none;vector-effect:non-scaling-stroke}
+.tooltip{position:absolute;pointer-events:none;background:#fff;color:#000;border:1px solid #000;border-radius:4px;padding:8px 10px;font-size:.82rem;line-height:1.35;box-shadow:0 2px 8px rgba(0,0,0,.15);max-width:260px;z-index:10;display:none}
+.tooltip h4{margin:0 0 4px;font-size:.9rem}
+.tooltip table{border-collapse:collapse;width:100%}
+.tooltip td{padding:1px 0}
+.tooltip td.n{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums;padding-left:8px}
+.escala{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--gris);margin-top:4px}
+.escala .grad{height:10px;flex:0 0 160px;border-radius:2px}
+details.taula{margin:14px 0 4px;font-size:.88rem}
+details.taula summary{cursor:pointer;color:#000;font-weight:700;text-decoration:underline;text-decoration-color:var(--blau);text-decoration-thickness:2px}
+.taula-scroll{max-height:360px;overflow:auto;border:1px solid var(--linia);margin-top:8px}
+table.dades{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+table.dades th,table.dades td{padding:4px 6px;border-bottom:1px solid var(--gris-clar);text-align:right;white-space:nowrap}
+table.dades th:first-child,table.dades td:first-child{text-align:left;white-space:normal}
+table.dades thead th{position:sticky;top:0;background:#fff;border-bottom:2px solid #000}
+.font{font-size:.75rem;color:var(--gris);margin-top:14px;border-top:1px solid var(--gris-clar);padding-top:8px}
+.font a{color:#000;text-decoration-color:var(--blau)}
+.seients svg{width:100%;height:auto;display:block}
+.nota{font-size:.8rem;color:var(--gris)}
+.resultat-carrer{border-left:4px solid var(--blau);padding:8px 12px;margin:10px 0;background:#fff}
+.suggeriments{list-style:none;margin:2px 0 0;padding:0;border:1px solid #888;border-radius:4px;max-height:220px;overflow:auto;position:absolute;background:#fff;z-index:20;width:100%}
+.suggeriments li{padding:6px 8px;cursor:pointer;font-size:.9rem}
+.suggeriments li:hover,.suggeriments li[aria-selected="true"]{background:#e6f7fd}
+.cercador{position:relative;flex:1 1 260px;max-width:420px}
+.cercador input{width:100%}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+.am-text{padding:0;max-width:none;font-size:13.6px;color:#333}
+.am-text p{margin:0 0 .75em;line-height:1.4;text-align:justify}
+.am-text strong{font-weight:700}
+
+.am-directe{border-left:4px solid var(--blau);background:#e6f7fd;padding:6px 10px;margin:0 0 12px;font-size:.88rem}
+.am-text a{color:#005c7a;text-decoration:underline}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+</head>
+<body data-viz="eg26-1-comunitat">
+<script>/* ARAmultimèdia · Eleccions generals · funcions comunes */
+/* Partits: per defecte, els del 23J. Les dades en directe poden portar la seua llista (camp "partits") */
+let PARTITS = [
+  { k: 'PP', nom: 'PP', color: '#1d5fb4', text: '#1d5fb4', max: 70, art: { el: 'el PP', El: 'El PP', del: 'del PP', al: 'al PP' } },
+  { k: 'PSOE', nom: 'PSOE', color: '#c8001a', text: '#c8001a', max: 70, art: { el: 'el PSOE', El: 'El PSOE', del: 'del PSOE', al: 'al PSOE' } },
+  { k: 'VOX', nom: 'Vox', color: '#7cc04a', text: '#4c8a26', max: 40, art: { el: 'Vox', El: 'Vox', del: 'de Vox', al: 'a Vox' } },
+  { k: 'SUMAR-COMPROMÍS', nom: 'Sumar-Compromís', color: '#9b2a8f', text: '#9b2a8f', max: 40, art: { el: 'Sumar-Compromís', El: 'Sumar-Compromís', del: 'de Sumar-Compromís', al: 'a Sumar-Compromís' } },
+  { k: 'ALTRES', nom: 'Altres', color: '#9a9a9a', text: '#555555', max: 15, art: { el: 'altres', El: 'Altres', del: "d'altres", al: 'a altres' } }
+];
+let P = Object.fromEntries(PARTITS.map(p => [p.k, p]));
+function definirPartits(llista) { if (llista && llista.length) { PARTITS = llista; P = Object.fromEntries(PARTITS.map(p => [p.k, p])); } }
+const PRINCIPALS = () => PARTITS.filter(p => p.k !== 'ALTRES').map(p => p.k);
+const teDades = u => !!(u && u.vots && u.valids != null);
+const fmtN = n => new Intl.NumberFormat('ca-ES').format(n);
+const fmtP = (x, d = 1) => new Intl.NumberFormat('ca-ES', { minimumFractionDigits: d, maximumFractionDigits: d }).format(x) + '\u00a0%';
+const pct = (v, u) => (u.valids ? 100 * v / u.valids : 0);
+const participacio = u => (u.cens ? 100 * u.votants / u.cens : 0);
+function guanyador(u) {
+  let best = null;
+  for (const p of PARTITS) { if (p.k === 'ALTRES') continue; if (!best || u.vots[p.k] > u.vots[best]) best = p.k; }
+  return best;
+}
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/* Barres horitzontals amb etiqueta directa (nom, %, vots i escons opcionals) */
+function barres(el, u, opts = {}) {
+  const max = opts.max || Math.max(...PARTITS.map(p => pct(u.vots[p.k], u)));
+  el.innerHTML = PARTITS.map(p => {
+    const v = u.vots[p.k] || 0, x = pct(v, u);
+    const esc_ = (u.escons && p.k !== 'ALTRES') ? ` · ${u.escons[p.k]} ${u.escons[p.k] === 1 ? 'escó' : 'escons'}` : '';
+    return `<div class="barra-fila" role="listitem"><span class="nom"><span class="punt" style="background:${p.color}"></span>${p.nom}</span>
+      <span class="pista"><span class="omplit" style="width:${(100 * x / max).toFixed(2)}%;background:${p.color}"></span></span>
+      <span class="val"><b>${fmtP(x)}</b><small>${fmtN(v)} vots${esc_}</small></span></div>`;
+  }).join('');
+  el.setAttribute('role', 'list');
+}
+
+/* Hemicicle d'escons */
+function hemicicle(el, escons, total) {
+  const W = 420, cx = W / 2;
+  const files = total <= 8 ? 1 : total <= 20 ? 2 : 3;
+  const rMax = 190, rMin = files === 1 ? rMax : rMax * (files === 2 ? 0.62 : 0.5);
+  const radis = d3.range(files).map(i => files === 1 ? rMax : rMin + (rMax - rMin) * i / (files - 1));
+  const suma = radis.reduce((a, b) => a + b, 0);
+  const n = radis.map(r => Math.round(total * r / suma)); n[n.length - 1] += total - n.reduce((a, b) => a + b, 0);
+  const pas = Math.min(...radis.map((r, i) => Math.PI * r / Math.max(1, n[i] - 1)));
+  const rr = Math.min(18, pas * 0.42, files > 1 ? (rMax - rMin) / (files - 1) * 0.42 : 18);
+  const cy = rMax + rr + 2;
+  const seients = [];
+  radis.forEach((r, i) => { for (let j = 0; j < n[i]; j++) { const a = Math.PI * (1 - (n[i] === 1 ? .5 : j / (n[i] - 1))); seients.push({ a, r, x: cx + r * Math.cos(a), y: cy - r * Math.sin(a) }); } });
+  seients.sort((s1, s2) => d3.descending(s1.a, s2.a) || d3.ascending(s1.r, s2.r));
+  const ordre = PARTITS.filter(p => p.k !== 'ALTRES' && escons[p.k] > 0).sort((a, b) => escons[b.k] - escons[a.k]);
+  const colors = []; ordre.forEach(p => { for (let i = 0; i < escons[p.k]; i++) colors.push(p); });
+  el.innerHTML = `<svg viewBox="0 ${(rMax - (files === 1 ? rMax : rMax)) - 4} ${W} ${cy + rr + 8}" role="img" aria-label="Hemicicle: ${ordre.map(p => p.nom + ' ' + escons[p.k]).join(', ')}">
+    ${seients.map((s, i) => `<circle cx="${s.x.toFixed(1)}" cy="${s.y.toFixed(1)}" r="${rr.toFixed(1)}" fill="${colors[i] ? colors[i].color : '#eee'}" stroke="#fff" stroke-width="2"><title>${colors[i] ? colors[i].nom : ''}</title></circle>`).join('')}
+    <text x="${cx}" y="${cy - 26}" text-anchor="middle" font-size="44" font-weight="700">${total}</text>
+    <text x="${cx}" y="${cy - 4}" text-anchor="middle" font-size="15" fill="#555">escons</text></svg>`;
+}
+function llegendaEscons(el, escons) {
+  el.innerHTML = PARTITS.filter(p => p.k !== 'ALTRES' && escons[p.k] > 0).sort((a, b) => escons[b.k] - escons[a.k])
+    .map(p => `<span><span class="punt" style="background:${p.color}"></span><b>${p.nom}</b>&nbsp;${escons[p.k]}</span>`).join('');
+}
+
+/* Mapa coroplètic: mode 'guanyador', 'part' o un partit */
+function colorUnitat(u, mode) {
+  if (!teDades(u)) return '#eeeeee';
+  if (mode === 'guanyador') return P[guanyador(u)].color;
+  if (mode === 'part') return d3.interpolateRgb('#e8f7fd', '#00597a')(Math.max(0, Math.min(1, (participacio(u) - 40) / 50)));
+  const p = P[mode]; const x = pct(u.vots[mode], u);
+  return d3.interpolateRgb('#f4f4f4', p.color)(Math.max(0, Math.min(1, x / escalaMax(mode))));
+}
+function escalaMax(mode) { return (P[mode] && P[mode].max) || 60; }
+function escalaHTML(mode) {
+  if (mode === 'guanyador') return '<div class="llegenda">' + PARTITS.filter(p => p.k !== 'ALTRES').map(p => `<span><span class="punt" style="background:${p.color}"></span>${p.nom}</span>`).join('') + '<span class="nota">Color: partit més votat</span></div>';
+  if (mode === 'part') return `<div class="escala"><span>40 %</span><span class="grad" style="background:linear-gradient(90deg,#e8f7fd,#00597a)"></span><span>90 % o més</span><span>· participació</span></div>`;
+  const p = P[mode];
+  return `<div class="escala"><span>0 %</span><span class="grad" style="background:linear-gradient(90deg,#f4f4f4,${p.color})"></span><span>${escalaMax(mode)} % o més</span><span>· vot a ${p.nom}</span></div>`;
+}
+function selectorMode(el, onChange, inicial = 'guanyador') {
+  el.innerHTML = `<label>Color del mapa <select aria-label="Què mostra el mapa">
+    <option value="guanyador">Partit més votat</option>
+    ${PARTITS.map(p => `<option value="${p.k}">% de vot: ${p.nom}</option>`).join('')}
+    <option value="part">Participació</option></select></label>`;
+  const s = el.querySelector('select'); s.value = inicial; s.addEventListener('change', () => onChange(s.value));
+}
+function tooltipHTML(titol, u, extra = '') {
+  if (!teDades(u)) return `<h4>${esc(titol)}</h4><span class="nota">Encara sense dades</span>`;
+  const files = PARTITS.map(p => `<tr><td><span class="punt" style="background:${p.color}"></span>${p.nom}</td><td class="n"><b>${fmtP(pct(u.vots[p.k], u))}</b></td><td class="n">${fmtN(u.vots[p.k])}</td></tr>`).join('');
+  return `<h4>${esc(titol)}</h4>${extra}<table>${files}</table><div class="nota" style="margin-top:4px">Participació: <b>${fmtP(participacio(u))}</b> · Cens: ${fmtN(u.cens)}</div>`;
+}
+function mapa(wrap, features, getUnit, getTitle, opts = {}) {
+  const W = opts.width || 600, H = opts.height || 600;
+  const proj = d3.geoMercator().fitSize([W, H], { type: 'FeatureCollection', features });
+  const path = d3.geoPath(proj);
+  wrap.innerHTML = '';
+  const svg = d3.select(wrap).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', opts.label || 'Mapa de resultats');
+  const tip = d3.select(wrap).append('div').attr('class', 'tooltip');
+  const g = svg.append('g');
+  const sel = g.selectAll('path').data(features).join('path').attr('class', 'unitat').attr('d', path);
+  if (opts.contorn) g.append('path').attr('class', 'contorn').attr('d', path(opts.contorn));
+  if (opts.zoom) {
+    const z = d3.zoom().scaleExtent([1, 12]).translateExtent([[0, 0], [W, H]])
+      .filter(ev => ev.type !== 'wheel' || ev.ctrlKey || ev.metaKey)
+      .on('zoom', ev => g.attr('transform', ev.transform));
+    svg.call(z);
+    const bt = d3.select(wrap).insert('div', ':first-child').attr('class', 'zoom-btns');
+    bt.append('button').attr('class', 'btn').attr('aria-label', 'Apropa').text('+').on('click', () => svg.transition().call(z.scaleBy, 1.8));
+    bt.append('button').attr('class', 'btn').attr('aria-label', 'Allunya').text('−').on('click', () => svg.transition().call(z.scaleBy, 1 / 1.8));
+    bt.append('button').attr('class', 'btn').text('Tot el terme').on('click', () => svg.transition().call(z.transform, d3.zoomIdentity));
+    wrap._zoomTo = (f, frac = 0.35) => { const [[x0, y0], [x1, y1]] = path.bounds(f); const k = Math.min(6, frac / Math.max((x1 - x0) / W, (y1 - y0) / H)); svg.transition().duration(600).call(z.transform, d3.zoomIdentity.translate(W / 2, H / 2).scale(k).translate(-(x0 + x1) / 2, -(y0 + y1) / 2)); };
+  }
+  let mode = opts.mode || 'guanyador';
+  function pinta() { sel.attr('fill', f => colorUnitat(getUnit(f), mode)); }
+  function mostra(ev, f) {
+    const r = wrap.getBoundingClientRect();
+    tip.html(tooltipHTML(getTitle(f), getUnit(f), opts.extra ? opts.extra(f) : '')).style('display', 'block');
+    const tw = tip.node().offsetWidth, th = tip.node().offsetHeight;
+    let x = ev.clientX - r.left + 14, y = ev.clientY - r.top + 14;
+    if (x + tw > r.width) x = Math.max(0, ev.clientX - r.left - tw - 14);
+    if (y + th > r.height) y = Math.max(0, ev.clientY - r.top - th - 14);
+    tip.style('left', x + 'px').style('top', y + 'px');
+  }
+  sel.on('mousemove', mostra).on('mouseleave', () => tip.style('display', 'none'))
+    .on('click', (ev, f) => { mostra(ev, f); if (opts.onClick) opts.onClick(f); });
+  pinta();
+  if (opts.etiquetes) opts.etiquetes.forEach(e => { const [x, y] = path.centroid(e.f); g.append('text').attr('x', x).attr('y', y).attr('text-anchor', 'middle').attr('font-size', 15).attr('font-weight', 700).attr('paint-order', 'stroke').attr('stroke', '#fff').attr('stroke-width', 4).attr('pointer-events', 'none').text(e.t); });
+  return {
+    setMode(m) { mode = m; pinta(); },
+    marca(ids) { const s = new Set(ids); sel.classed('marcat', f => s.has(f.properties.id)); sel.filter(f => s.has(f.properties.id)).raise(); g.selectAll('path.contorn, text').raise(); },
+    zoomA(ids, frac) { if (!wrap._zoomTo) return; const s = new Set(ids); const fs = features.filter(f => s.has(f.properties.id)); if (fs.length) wrap._zoomTo({ type: 'FeatureCollection', features: fs }, fs.length > 3 ? 0.92 : frac); },
+    mostraId(id) {
+      const f = features.find(f => f.properties.id === id); if (!f) return;
+      const t = d3.zoomTransform(svg.node()); const [x0, y0] = path.centroid(f); const [x, y] = t.apply([x0, y0]);
+      const r = svg.node().getBoundingClientRect(); const k = r.width / W;
+      mostra({ clientX: r.left + Math.max(0, Math.min(W, x)) * k, clientY: r.top + Math.max(0, Math.min(H, y)) * k }, f);
+    },
+    amaga() { tip.style('display', 'none'); }
+  };
+}
+function taula(el, files, titolUnitat) {
+  el.innerHTML = `<div class="taula-scroll"><table class="dades"><thead><tr><th>${titolUnitat}</th>${PARTITS.map(p => `<th>${p.nom}</th>`).join('')}<th>Particip.</th></tr></thead>
+  <tbody>${files.filter(([, u]) => teDades(u)).map(([nom, u]) => `<tr><td>${esc(nom)}</td>${PARTITS.map(p => `<td>${fmtP(pct(u.vots[p.k], u))}</td>`).join('')}<td>${fmtP(participacio(u))}</td></tr>`).join('')}</tbody></table></div>`;
+}
+/* Alçada automàtica per a iframe: la pàgina no té scroll propi i el desplaçament passa a la web */
+(function () {
+  if (window.self === window.top) return;
+  document.documentElement.style.overflow = 'hidden';
+  function envia() { parent.postMessage({ tipus: 'am-iframe-altura', id: document.body.dataset.viz, altura: Math.ceil(document.documentElement.getBoundingClientRect().height) + 4 }, '*'); }
+  window.addEventListener('load', envia);
+  if ('ResizeObserver' in window) new ResizeObserver(envia).observe(document.documentElement);
+  setInterval(envia, 1500);
+})();
+
+/* ---- Dades en directe ----
+   AM_DIRECTE_URL (posat per build_html.py) apunta a un JSON que el script directe.py actualitza la nit electoral.
+   Si el fitxer no existix o no respon, la pàgina mostra les dades que porta dins (23J). */
+const AM_ESTAT = {};
+function amIniciar(dadesFixes, inici) {
+  const cont = document.querySelector('.am-viz');
+  const plantilla = cont ? cont.innerHTML : '';
+  const viz = document.body.dataset.viz;
+  let versio = null;
+  function pinta(dades, directe) {
+    if (cont) cont.innerHTML = plantilla;
+    definirPartits(directe ? directe.partits : null);
+    if (directe) {
+      document.querySelectorAll('.am-data').forEach(e => { e.textContent = directe.data_text; });
+      document.querySelectorAll('.am-font').forEach(e => { e.innerHTML = (directe.font_per_pagina && directe.font_per_pagina[viz]) || directe.font_html; });
+      if (cont && directe.escrutat != null && !cont.classList.contains('am-text')) cont.insertAdjacentHTML('afterbegin', `<div class="am-directe"><b>${directe.escrutat < 100 ? 'Escrutini provisional' : 'Escrutini provisional completat'}: ${fmtP(directe.escrutat)} escrutat</b> en la Comunitat Valenciana · Actualitzat a les ${esc(directe.hora)}</div>`);
+    }
+    try { inici(dades, !!directe); } catch (e) { console.error(e); if (directe) { pinta(dadesFixes, null); } }
+  }
+  const url = typeof AM_DIRECTE_URL === 'string' && AM_DIRECTE_URL;
+  if (!url) { pinta(dadesFixes, null); return; }
+  function consulta(primera) {
+    fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now(), { cache: 'no-store' })
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(j => {
+        if (!j || !j.actiu || !j.pagines || !j.pagines[viz]) { if (primera) pinta(dadesFixes, null); return; }
+        if (j.versio === versio) return;
+        versio = j.versio; pinta(j.pagines[viz], j);
+      })
+      .catch(() => { if (primera) pinta(dadesFixes, null); });
+  }
+  consulta(true);
+  setInterval(() => consulta(false), 60000);
+}
+</script>
+<div class="am-viz">
+  <h2>Resultats al Congrés en la Comunitat Valenciana</h2>
+  <p class="entradeta">Percentatge de vots i escons de cada candidatura en les eleccions generals del <span class="am-data">23 de juliol de 2023</span>. La Comunitat Valenciana reparteix 33 escons entre les tres províncies.</p>
+  <div class="kpis" id="kpis"></div>
+  <div class="graella">
+    <div>
+      <h3>Escons en la Comunitat Valenciana</h3>
+      <div class="seients" id="hemi"></div>
+      <div class="llegenda" id="lleg"></div>
+    </div>
+    <div>
+      <h3>Percentatge de vot</h3>
+      <div class="barres" id="barres"></div>
+      <p class="nota">Percentatge sobre els vots vàlids (inclouen els vots en blanc).</p>
+    </div>
+  </div>
+  <h3>Escons per província</h3>
+  <div id="provs"></div>
+  <details class="taula"><summary>Veure les dades en una taula</summary><div id="taula"></div></details>
+  <p class="font am-font">Font: <a href="https://dadesobertes.gva.es/va/dataset/pre-result-elec-general-2023" target="_blank" rel="noopener">Generalitat Valenciana, Resultats d'eleccions generals 2023</a>, a partir de dades del Ministeri de l'Interior. Escons calculats amb el sistema D'Hondt, coincidents amb el resultat oficial. Elaboració: ARAmultimèdia.</p>
+</div>
+<script>
+const AM_DIRECTE_URL = "https://quiqueribera.github.io/eleccions-aramultimedia/prova/prova-29n.json";
+const DADES = {"cv":{"cens":3736481,"votants":2671610,"nuls":27327,"blancs":20040,"valids":2644283,"vots":{"PP":922064,"PSOE":849620,"VOX":413703,"SUMAR-COMPROMÍS":402813,"ALTRES":36043},"escons":{"PP":13,"PSOE":11,"VOX":5,"SUMAR-COMPROMÍS":4,"ALTRES":0},"nom":"Comunitat Valenciana","total_escons":33},"provincies":{"03":{"nom":"Alacant","cens":1306311,"votants":908842,"nuls":9650,"blancs":6575,"valids":899192,"vots":{"PP":330293,"PSOE":287737,"VOX":146133,"SUMAR-COMPROMÍS":115787,"ALTRES":12667},"escons":{"PP":5,"PSOE":4,"VOX":2,"SUMAR-COMPROMÍS":1,"ALTRES":0},"total_escons":12},"46":{"nom":"València","cens":1999340,"votants":1451187,"nuls":14026,"blancs":10810,"valids":1437161,"vots":{"PP":483469,"PSOE":461353,"VOX":218657,"SUMAR-COMPROMÍS":242839,"ALTRES":20033},"escons":{"PP":6,"PSOE":5,"VOX":2,"SUMAR-COMPROMÍS":3,"ALTRES":0},"total_escons":16},"12":{"nom":"Castelló","cens":430830,"votants":311581,"nuls":3651,"blancs":2655,"valids":307930,"vots":{"PP":108302,"PSOE":100530,"VOX":48913,"SUMAR-COMPROMÍS":44187,"ALTRES":3343},"escons":{"PP":2,"PSOE":2,"VOX":1,"SUMAR-COMPROMÍS":0,"ALTRES":0},"total_escons":5}}};
+amIniciar(DADES, (D, directe) => {
+  const cv = D.cv;
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi"><b>${fmtP(participacio(cv))}</b><span>participació</span></div>
+    <div class="kpi"><b>${fmtN(cv.votants)}</b><span>votants</span></div>
+    <div class="kpi"><b>${fmtN(cv.cens)}</b><span>${directe ? 'cens de les meses escrutades' : 'persones en el cens'}</span></div>
+    <div class="kpi"><b>${cv.total_escons}</b><span>escons en joc</span></div>`;
+  hemicicle(document.getElementById('hemi'), cv.escons, cv.total_escons);
+  llegendaEscons(document.getElementById('lleg'), cv.escons);
+  barres(document.getElementById('barres'), cv);
+  const ordreP = ['03', '46', '12'];
+  document.getElementById('provs').innerHTML = ordreP.map(k => {
+    const u = D.provincies[k];
+    const quadres = PARTITS.filter(p => p.k !== 'ALTRES').flatMap(p => Array(u.escons[p.k]).fill(p))
+      .map(p => `<span title="${p.nom}" style="display:inline-block;width:20px;height:20px;border-radius:4px;margin:0 3px 3px 0;background:${p.color}"></span>`).join('');
+    const txt = PARTITS.filter(p => p.k !== 'ALTRES' && u.escons[p.k] > 0).map(p => `${p.nom} ${u.escons[p.k]}`).join(' · ');
+    return `<div style="display:grid;grid-template-columns:100px 1fr;gap:10px;align-items:center;margin-bottom:10px">
+      <b>${u.nom}<br><span class="nota">${u.total_escons} escons</span></b>
+      <div><div aria-hidden="true">${quadres}</div><span class="nota">${txt}</span></div></div>`;
+  }).join('');
+  taula(document.getElementById('taula'), [['Comunitat Valenciana', cv], ...ordreP.map(k => [D.provincies[k].nom, D.provincies[k]])], 'Àmbit');
+  document.querySelector('#taula thead tr').insertAdjacentHTML('beforeend', '<th>Escons</th>');
+  document.querySelectorAll('#taula tbody tr').forEach((tr, i) => {
+    const u = i === 0 ? cv : D.provincies[ordreP[i - 1]];
+    tr.insertAdjacentHTML('beforeend', `<td>${PARTITS.filter(p => p.k !== 'ALTRES' && u.escons[p.k]).map(p => p.nom + ' ' + u.escons[p.k]).join(', ')}</td>`);
+  });
+});
+</script>
+
+</body>
+</html>
